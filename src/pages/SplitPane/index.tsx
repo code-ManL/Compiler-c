@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
-import Editor from "../../components/editor/editor";
 import Output from "../Output";
+import Source from "../Source";
 import "./index.scss";
 
 interface Istate {
@@ -64,7 +64,7 @@ function SplitPane() {
         className="left"
         style={{ [isVertical ? "height" : "width"]: boundSplit + "%" }}
       >
-        <Editor></Editor>
+        <Source></Source>
         <div className="dragger" onMouseDown={dragStart} />
       </div>
       <div

@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./fileSelector.scss";
 
-function FileSelector() {
+import { IEditorProps } from "./types";
+
+function FileSelector(props: IEditorProps) {
+  const { fileTitle } = props;
+
   const pendingFileDom = useRef<null | HTMLDivElement>(null);
 
   // 文件队列
@@ -74,7 +78,7 @@ function FileSelector() {
   ) => void = (e, filename, k) => {
     e.stopPropagation();
 
-    if (confirm(`Are you sure you want to delete ${filename}}?`)) {
+    if (confirm(`Are you sure you want to delete ${filename}?`)) {
       if (activeFile === filename) {
         useActive(files[0]);
       }
@@ -135,8 +139,9 @@ function FileSelector() {
             onBlur={(_) => {
               doneAddFile();
             }}
-            onKeyUp={(_) => {
-              doneAddFile();
+            onKeyUp={(e) => {
+              if (e.key === "Enter") doneAddFile();
+              else if (e.key === "Escape") cancelAddFile();
             }}
           />
         </div>
@@ -150,7 +155,7 @@ function FileSelector() {
 
       <div className="import-map-wrapper">
         <div className="file import-map">
-          <span className="label">Import Map</span>
+          <span className="label">{fileTitle}</span>
         </div>
       </div>
     </div>

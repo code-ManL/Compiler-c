@@ -1,11 +1,12 @@
 import FileSelector from "./fileSelector";
 import Codemirror from "../codemirror";
 import "./editor.scss";
+import { IEditorProps } from "./types";
 
-function Editor() {
+function Editor(props: IEditorProps) {
   return (
     <>
-      <FileSelector />
+      <FileSelector {...props}></FileSelector>
       <div className="editor-container">
         <Codemirror />
       </div>
