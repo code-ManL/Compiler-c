@@ -1,8 +1,8 @@
 .output-pane {
   height: 60%;
   box-sizing: border-box;
-  border-bottom: 1px solid var(--border);
-
+  background-color: #181818;
+  margin-bottom: 10px;
   .output-container {
     height: calc(100% - var(--header-height));
     overflow-y: auto;

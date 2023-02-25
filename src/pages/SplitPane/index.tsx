@@ -65,7 +65,9 @@ function SplitPane() {
         style={{ [isVertical ? "height" : "width"]: boundSplit + "%" }}
       >
         <Source></Source>
-        <div className="dragger" onMouseDown={dragStart} />
+        <div className="dragger" onMouseDown={dragStart}>
+          <span>|||</span>
+        </div>
       </div>
       <div
         className="right"

@@ -8,6 +8,9 @@ function Source() {
         <Editor fileTitle="Target"></Editor>
       </div>
       <div className="compliler">
+        <div className="dragger">
+          <span>==</span>
+        </div>
         <Editor fileTitle="Compiler"></Editor>
       </div>
     </div>
