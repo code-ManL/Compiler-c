@@ -3,6 +3,7 @@
   box-sizing: border-box;
   background-color: #181818;
   margin-bottom: 10px;
+
   .output-container {
     height: calc(100% - var(--header-height));
     overflow-y: auto;
@@ -10,7 +11,6 @@
 
   .tab-buttons {
     box-sizing: border-box;
-    border-bottom: 1px solid var(--border);
     background-color: var(--bg);
     height: var(--header-height);
     overflow: hidden;
@@ -39,5 +39,6 @@
 
 
 .console-pane {
-  height: 40%;
+  height: 39%;
+  border: 1px solid var(--border);
 }

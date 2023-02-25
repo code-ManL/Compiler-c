@@ -11,8 +11,6 @@ interface Istate {
 function SplitPane() {
   const container = useRef<null | HTMLDivElement>(null);
 
-  const isVertical: boolean = false;
-
   const [state, setState] = useState<Istate>({ dragging: false, split: 50 });
 
   const boundSplit: number = useMemo(() => {
@@ -28,9 +26,9 @@ function SplitPane() {
 
     // 每一次重新渲染，非响应式数据都变为初始值 console.log(startPosition, startSplit); 0 0
     setState({ ...state, dragging: true });
-    startPosition = isVertical ? e.pageY : e.pageX;
+    startPosition = e.pageX;
     startSplit = boundSplit;
-    console.log(startPosition, startSplit);
+    console.log(startSplit, startPosition);
   };
 
   const dragEnd = () => {
@@ -40,14 +38,13 @@ function SplitPane() {
   const dragMove: (e: React.MouseEvent<HTMLDivElement>) => void = (e) => {
     if (state.dragging) {
       // 获取x
-      const position = isVertical ? e.pageY : e.pageX;
+      const position = e.pageX;
       // 获取offsetWidth
-      const totalSize = isVertical
-        ? container.current!.offsetHeight
-        : container.current!.offsetWidth;
+      const totalSize = container.current!.offsetWidth;
+      
       const dp = position - startPosition;
 
-      setState({ ...state, split: startSplit + ~~((dp / totalSize) * 100) });
+      setState({ ...state, split: startSplit - 1 + (dp / totalSize) * 100 });
     }
   };
 
@@ -60,19 +57,13 @@ function SplitPane() {
       onMouseLeave={dragEnd}
     >
       {/* 编辑 */}
-      <div
-        className="left"
-        style={{ [isVertical ? "height" : "width"]: boundSplit + "%" }}
-      >
+      <div className="left" style={{ ["width"]: boundSplit + "%" }}>
         <Source></Source>
         <div className="dragger" onMouseDown={dragStart}>
           <span>|||</span>
         </div>
       </div>
-      <div
-        className="right"
-        style={{ [isVertical ? "height" : "width"]: 100 - boundSplit + "%" }}
-      >
+      <div className="right" style={{ ["width"]: 100 - boundSplit + "%" }}>
         <Output />
       </div>
     </div>
