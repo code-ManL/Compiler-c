@@ -11,7 +11,7 @@ function Header() {
   return (
     <nav>
       <h1>
-        <span>LiuSeen Compiler-C Playground</span>
+        <span>VRuse Compiler-C Playground</span>
       </h1>
       <div className="links">
         <button
