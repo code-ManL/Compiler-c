@@ -3,14 +3,14 @@
 
   .target {
     border-radius: 12px 12px 0 0;
-    background-color: #181818;
     margin-bottom: 20px;
+    background-color: #ffffff;
   }
 
   .compliler {
     border-radius: 12px 12px 0 0;
-    background-color: #181818;
     position: relative;
+    background-color: #ffffff;
 
     .dragger {
       position: absolute;
@@ -26,4 +26,13 @@
       color: rgb(109, 109, 109);
     }
   }
+
+}
+
+.dark .target {
+  background-color: black;
+}
+
+.dark .compliler {
+  background-color: black;
 }

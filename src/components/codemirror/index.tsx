@@ -5,6 +5,7 @@ import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { rust } from "@codemirror/lang-rust";
 import { useEffect, useRef } from "react";
+import { eclipse } from "@uiw/codemirror-theme-eclipse";
 import { abcdef } from "@uiw/codemirror-theme-abcdef";
 
 import "./index.scss";
@@ -29,8 +30,9 @@ function Codemirror() {
     container: editor.current,
     extensions,
     value: code,
-    theme: abcdef,
+    theme: eclipse,
   });
+
 
   useEffect(() => {
     if (editor.current) {

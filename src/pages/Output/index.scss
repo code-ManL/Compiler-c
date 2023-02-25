@@ -1,7 +1,7 @@
 .output-pane {
   height: 60%;
   box-sizing: border-box;
-  background-color: #181818;
+  background-color: #ffffff;
   margin-bottom: 10px;
 
   .output-container {
@@ -41,4 +41,8 @@
 .console-pane {
   height: 39%;
   border: 1px solid var(--border);
+}
+
+.dark .output-pane {
+  background-color: black;
 }

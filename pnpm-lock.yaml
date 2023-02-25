@@ -10,6 +10,7 @@ specifiers:
   '@types/react': ^18.0.27
   '@types/react-dom': ^18.0.10
   '@uiw/codemirror-theme-abcdef': ^4.19.9
+  '@uiw/codemirror-theme-eclipse': ^4.19.9
   '@uiw/codemirror-theme-github': ^4.19.9
   '@uiw/codemirror-theme-okaidia': ^4.19.9
   '@uiw/react-codemirror': ^4.19.9
@@ -32,6 +33,7 @@ dependencies:
   '@codemirror/lang-rust': 6.0.1
   '@types/node': 18.14.0
   '@uiw/codemirror-theme-abcdef': 4.19.9
+  '@uiw/codemirror-theme-eclipse': 4.19.9
   '@uiw/codemirror-theme-github': 4.19.9
   '@uiw/codemirror-theme-okaidia': 4.19.9
   '@uiw/react-codemirror': 4.19.9_biqbaboplfbrettd7655fr4n2y
@@ -910,6 +912,12 @@ packages:
 
   /@uiw/codemirror-theme-abcdef/4.19.9:
     resolution: {integrity: sha512-F2ChAT9+ryD3hhzoHmVUmINxJKl6n+A/I2LTH4Gf9i0VFLvGRpBUGRmPqct3csIK34eG/LyPikoQremVb+p5sg==}
+    dependencies:
+      '@uiw/codemirror-themes': 4.19.9
+    dev: false
+
+  /@uiw/codemirror-theme-eclipse/4.19.9:
+    resolution: {integrity: sha512-9h9aNd8TnIUxGgzJx5sraEvCEfX5RV/xwigTGoI4gVyYQxhTKKcQn1l2mOvweKYFM0Lw7tmT9+gSv0rA7x/I+Q==}
     dependencies:
       '@uiw/codemirror-themes': 4.19.9
     dev: false

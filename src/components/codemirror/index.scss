@@ -1,41 +1,57 @@
-.codemirror {
-  height: 100%;
-  overflow: auto;
+ .codemirror {
+   height: 100%;
+   overflow: auto;
 
-  .cm-editor {
-    background-color: #181818;
+  //  .cm-editor {
+  //    background-color: rgb(231, 226, 226);
 
-    .cm-activeLine.cm-line {
-      background-color: #4a4a4b;
-    }
+  //    .cm-activeLine.cm-line {
+  //      background-color: #efeff4;
+  //    }
 
-    .cm-gutters {
-      background-color: #181818;
-      color: #a7a4a4;
-    }
-  }
-}
+  //    .cm-gutters {
+  //      background-color: #f2eeee;
+  //      color: #f8f5f5;
+  //    }
+  //  }
 
-.codemirror::-webkit-scrollbar {
-  width: 5px;
-}
+ }
 
-.codemirror::-webkit-scrollbar-track {
-  background: rgba(179, 177, 177, .2);
-  border-radius: 10px;
-}
+ .codemirror::-webkit-scrollbar {
+   width: 5px;
+ }
 
-.codemirror::-webkit-scrollbar-thumb {
-  background: rgb(136, 136, 136);
-  border-radius: 10px;
-}
+ .codemirror::-webkit-scrollbar-track {
+   background: transparent;
+   border-radius: 10px;
+ }
 
-.codemirror::-webkit-scrollbar-thumb:hover {
-  background: rgb(100, 100, 100);
-  border-radius: 10px;
-}
+ .codemirror::-webkit-scrollbar-thumb {
+   background: rgb(119, 118, 118);
+   border-radius: 10px;
+ }
 
-.codemirror::-webkit-scrollbar-thumb:active {
-  background: rgb(68, 68, 68);
-  border-radius: 10px;
-}
+ .codemirror::-webkit-scrollbar-thumb:hover {
+   background: rgb(100, 100, 100);
+   border-radius: 10px;
+ }
+
+ .codemirror::-webkit-scrollbar-thumb:active {
+   background: rgb(68, 68, 68);
+   border-radius: 10px;
+ }
+
+ .dark {
+   .cm-editor {
+     background-color: #181818;
+
+     .cm-activeLine.cm-line {
+       background-color: #4a4a4b;
+     }
+
+     .cm-gutters {
+       background-color: #181818;
+       color: #818080;
+     }
+   }
+ }
