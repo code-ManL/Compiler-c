@@ -1,0 +1,17 @@
+.codemirror {
+  height: 100%;
+  overflow: auto;
+
+  .cm-editor {
+    background-color: #242424;
+
+    .cm-activeLine.cm-line {
+      background-color: #4a4a4b;
+    }
+
+    .cm-gutters {
+      background-color: #242424;
+      color: #a7a4a4;
+    }
+  }
+}

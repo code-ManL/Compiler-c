@@ -1,0 +1,5 @@
+.editor-container {
+  height: calc(100% - var(--header-height));
+  overflow: hidden;
+  position: relative;
+}
