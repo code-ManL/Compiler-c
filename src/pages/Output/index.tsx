@@ -4,12 +4,7 @@ import Console from "./Console";
 import { useState } from "react";
 
 function Output() {
-  const modes = [
-    "Lexical analysis",
-    "Syntax",
-    "Semantic analysis",
-    // "Abstract tree",
-  ];
+  const modes = ["Lexical analysis", "Syntax", "Semantic analysis"];
 
   const [mode, useMode] = useState(modes[0]);
 
@@ -20,6 +15,7 @@ function Output() {
           {modes.map((item, k) => {
             return (
               <button
+                key={k}
                 className={`${mode == item ? "active" : ""}`}
                 onClick={() => useMode(modes[k])}
               >

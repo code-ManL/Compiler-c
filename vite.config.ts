@@ -1,7 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import UnoCSS from 'unocss/vite'
-import { presetAttributify, presetUno } from 'unocss'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -16,11 +14,5 @@ export default defineConfig({
   resolve: {
     alias: entries
   },
-  plugins: [react(),
-  UnoCSS({
-    presets: [
-      presetAttributify({ /* preset options */ }),
-      presetUno(),
-    ],
-  })],
+  plugins: [react()],
 })
