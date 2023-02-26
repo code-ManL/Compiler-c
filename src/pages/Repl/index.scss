@@ -19,7 +19,7 @@
 
 .dark .react-repl {
   --bg: #1a1a1a;
-    background-color: #181818;
+  background-color: #181818;
   --bg-soft: #242424;
   --border: #383838;
   --text-light: #aaa;
@@ -33,4 +33,8 @@
   cursor: pointer;
   margin: 0;
   background-color: transparent;
+}
+
+.dark .react-repl {
+  background-color: #242424;
 }

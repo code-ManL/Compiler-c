@@ -1,17 +1,27 @@
 import { Download, Sun, Moon, GitHub, Share } from "@src/icons";
 import "./index.scss";
 
+import store from "../../store/theme";
+
 function Header() {
   const toggleDark = () => {
     const cls = document.documentElement.classList;
+
     cls.toggle("dark");
     localStorage.setItem("LiuSeen-prefer-dark", String(cls.contains("dark")));
+    cls.value === "dark"
+      ? store.dispatch({
+          type: "",
+        })
+      : store.dispatch({
+          type: "dark",
+        });
   };
 
   return (
     <nav>
       <h1>
-        <span>VRuse Compiler-C Playground</span>
+        <span>Compiler-C </span>
       </h1>
       <div className="links">
         <button

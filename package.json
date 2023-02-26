@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "vitest --watch --update",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -25,8 +26,10 @@
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "redux": "^4.2.1",
     "sass": "^1.58.3",
-    "scss": "^0.2.4"
+    "scss": "^0.2.4",
+    "vitest": "^0.29.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

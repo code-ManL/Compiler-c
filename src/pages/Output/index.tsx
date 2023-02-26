@@ -4,7 +4,7 @@ import Console from "./Console";
 import { useState } from "react";
 
 function Output() {
-  const modes = ["Lexical analysis", "Syntax", "Semantic analysis"];
+  const modes = ["Lexical analysis", "Syntax Parser", "Semantic analysis"];
 
   const [mode, useMode] = useState(modes[0]);
 
