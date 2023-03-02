@@ -2,6 +2,11 @@
    height: 100%;
    overflow: auto;
 
+   .cm-gutters {
+     background-color: #ffffff;
+     color: #818080;
+   }
+
  }
 
  .codemirror::-webkit-scrollbar {

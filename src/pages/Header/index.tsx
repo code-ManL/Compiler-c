@@ -11,17 +11,17 @@ function Header() {
     localStorage.setItem("LiuSeen-prefer-dark", String(cls.contains("dark")));
     cls.value === "dark"
       ? store.dispatch({
-          type: "",
-        })
+        type: "",
+      })
       : store.dispatch({
-          type: "dark",
-        });
+        type: "dark",
+      });
   };
 
   return (
     <nav>
       <h1>
-        <span>Compiler-C </span>
+        <span>JavaScript-Compiler </span>
       </h1>
       <div className="links">
         <button
@@ -39,7 +39,7 @@ function Header() {
           <Download />
         </button>
         <button title="View on GitHub" className="github">
-          <a href="https://github.com/code-ManL" target="_blank">
+          <a href="https://github.com/code-ManL/Compiler-js" target="_blank">
             <GitHub />
           </a>
         </button>
