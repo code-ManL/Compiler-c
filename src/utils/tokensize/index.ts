@@ -1,3 +1,5 @@
+import { Ttoken } from "./types";
+import { isAlpha, isDigit, isOperators, isPunctuator, isSpace, isKeyword, pushToken } from "./shared";
 
 enum State {
   INITIAL = 0,
@@ -7,80 +9,10 @@ enum State {
   OPERATORS = 4
 }
 
-function isAlpha(c: string) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_'
-}
-
-function isDigit(d: string) {
-  return d >= '0' && d <= '9'
-}
-
-function isSpace(s: string) {
-  return s === ' '
-}
-
-function isPunctuator(c: string) {
-  return punctuator.includes(c)
-}
-
-function isOperators(c: string) {
-  return operators.includes(c)
-}
-
-
-interface Ttoken {
-  type: string
-  State: number
-  value: string
-}
-var operators = ["+", "-", "*", "/", "=", "<", ">", "!", "=", "."]
-const punctuator = ["{", "}", ";", ",", "(", ")", "[", "]", '\r', '\n']
-const keyword = [
-  "break",
-  "case",
-  "catch",
-  "continue",
-  "const",
-  "default",
-  "delete",
-  "do",
-  "else",
-  "finally",
-  "for",
-  "function",
-  "if",
-  "in",
-  "instanceof",
-  "let",
-  "new",
-  "return",
-  "switch",
-  "this",
-  "throw",
-  "try",
-  "typepf",
-  "var",
-  "void",
-  "while",
-  "with"
-]
-
-
-function pushToken(token: Ttoken[], type: string, State: number, value: string) {
-  token.push({
-    type,
-    State,
-    value
-  })
-}
-
-
-
 export function tokenize(s: string) {
   let token: Ttoken[] = []
   const chars: string[] = []
   let currentState = State.INITIAL
-
 
   while (s) {
     const c = s[0]
@@ -109,15 +41,18 @@ export function tokenize(s: string) {
         }
         else if (isDigit(c)) {
           const c = chars.join('')
-          pushToken(token, 'Identifier', 2, c)
+          if (isKeyword(c)) {
+            pushToken(token, 'Keyword', 1, c)
+          } else {
+            pushToken(token, 'Identifier', 2, c)
+          }
           chars.length = 0
           currentState = State.NUMBER
         }
         else if (isSpace(c)) {
           const c = chars.join('')
-          if (keyword.includes(c)) {
+          if (isKeyword(c)) {
             pushToken(token, 'Keyword', 1, c)
-
           } else {
             pushToken(token, 'Identifier', 2, c)
           }
@@ -126,13 +61,22 @@ export function tokenize(s: string) {
         }
         else if (isPunctuator(c)) {
           const c = chars.join('')
-          if (keyword.includes(c)) {
+          if (isKeyword(c)) {
             pushToken(token, 'Keyword', 1, c)
           } else {
             pushToken(token, 'Identifier', 2, c)
           }
           chars.length = 0
           currentState = State.PUNCTUATOR
+        } else if (isOperators(c)) {
+          const c = chars.join('')
+          if (isKeyword(c)) {
+            pushToken(token, 'Keyword', 1, c)
+          } else {
+            pushToken(token, 'Identifier', 2, c)
+          }
+          chars.length = 0
+          currentState = State.OPERATORS
         }
         break
       case State.NUMBER:
@@ -155,6 +99,11 @@ export function tokenize(s: string) {
           pushToken(token, 'Number', 3, c)
           chars.length = 0
           currentState = State.PUNCTUATOR
+        } else if (isOperators(c)) {
+          const c = chars.join('')
+          pushToken(token, 'Number', 3, c)
+          chars.length = 0
+          currentState = State.OPERATORS
         }
         break
       case State.PUNCTUATOR:
@@ -184,7 +133,8 @@ export function tokenize(s: string) {
           pushToken(token, 'Operators', 6, c)
           chars.length = 0
           currentState = State.STRING
-        } else if (isDigit(c)) {
+        }
+        else if (isDigit(c)) {
           const c = chars.join('')
           pushToken(token, 'Operators', 6, c)
           chars.length = 0
@@ -200,6 +150,7 @@ export function tokenize(s: string) {
           chars.length = 0
           currentState = State.PUNCTUATOR
         }
+        break
     }
   }
   return token
