@@ -14,12 +14,12 @@ describe.only('parser', async () => {
       [
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "function",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "add",
         },
         {
@@ -29,7 +29,7 @@ describe.only('parser', async () => {
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "a",
         },
         {
@@ -39,7 +39,7 @@ describe.only('parser', async () => {
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "b",
         },
         {
@@ -54,47 +54,37 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "let",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "a",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "=",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "1",
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "for",
         },
         {
@@ -104,22 +94,22 @@ describe.only('parser', async () => {
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "let",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "i",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "=",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "0",
         },
         {
@@ -129,17 +119,17 @@ describe.only('parser', async () => {
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "i",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "<",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "3",
         },
         {
@@ -149,12 +139,12 @@ describe.only('parser', async () => {
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "i",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "++",
         },
         {
@@ -169,47 +159,37 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "let",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "j",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "=",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "0",
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "while",
         },
         {
@@ -219,17 +199,17 @@ describe.only('parser', async () => {
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "j",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "<",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "i",
         },
         {
@@ -244,33 +224,78 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "j",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "++",
         },
         {
           "state": 5,
+          "type": "Operators",
+          "value": "rn",
+        },
+        {
+          "state": 2,
+          "type": "Number",
+          "value": "console",
+        },
+        {
+          "state": 6,
+          "type": undefined,
+          "value": ".",
+        },
+        {
+          "state": 2,
+          "type": "Number",
+          "value": "log",
+        },
+        {
+          "state": 4,
           "type": "Punctuator",
-          "value": "r",
+          "value": "(",
+        },
+        {
+          "state": 2,
+          "type": "Number",
+          "value": "j",
+        },
+        {
+          "state": 6,
+          "type": undefined,
+          "value": "+",
+        },
+        {
+          "state": 4,
+          "type": "Punctuator",
+          "value": "\\"",
+        },
+        {
+          "state": 3,
+          "type": "Punctuator",
+          "value": "123",
+        },
+        {
+          "state": 4,
+          "type": "Punctuator",
+          "value": "\\"",
+        },
+        {
+          "state": 4,
+          "type": "Punctuator",
+          "value": ")",
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 4,
@@ -279,13 +304,8 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 4,
@@ -294,52 +314,47 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 1,
-          "type": "Keyword",
+          "type": "Identifier",
           "value": "return",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "a",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": ">",
         },
         {
           "state": 2,
-          "type": "Identifier",
+          "type": "Number",
           "value": "b",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": "?",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "1",
         },
         {
           "state": 6,
-          "type": "Operators",
+          "type": undefined,
           "value": ":",
         },
         {
           "state": 3,
-          "type": "Number",
+          "type": "Punctuator",
           "value": "2",
         },
         {
@@ -349,13 +364,8 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
-        },
-        {
-          "state": 5,
-          "type": "Punctuator",
-          "value": "n",
+          "type": "Operators",
+          "value": "rn",
         },
         {
           "state": 4,
@@ -364,13 +374,18 @@ describe.only('parser', async () => {
         },
         {
           "state": 5,
-          "type": "Punctuator",
-          "value": "r",
+          "type": "Operators",
+          "value": "rn",
         },
         {
-          "state": 5,
+          "state": 6,
+          "type": undefined,
+          "value": "//",
+        },
+        {
+          "state": 3,
           "type": "Punctuator",
-          "value": "n",
+          "value": "21312",
         },
       ]
     `)

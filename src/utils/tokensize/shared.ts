@@ -1,7 +1,7 @@
 import { Ttoken } from "./types"
 
 var operators = ["+", "-", "*", "/", "=", "<", ">", "!", "=", ".", "?", ":"]
-const punctuator = ["{", "}", ";", ",", "(", ")", "[", "]", '\r', '\n']
+const punctuator = ["{", "}", ";", ",", "(", ")", "[", "]", '\r', '\n', '"', "'"]
 const keyword = [
   "break",
   "case",
@@ -57,13 +57,7 @@ function isKeyword(c: string) {
 }
 
 
-function pushToken(token: Ttoken[], type: string, state: number, value: string) {
-  token.push({
-    type,
-    state,
-    value
-  })
-}
+
 
 export {
   isAlpha,
@@ -72,5 +66,4 @@ export {
   isPunctuator,
   isOperators,
   isKeyword,
-  pushToken,
 }
