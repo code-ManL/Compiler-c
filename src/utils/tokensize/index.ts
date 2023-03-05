@@ -18,34 +18,64 @@ enum TokenState {
   OPERATORS = 6
 }
 
-const tokenTypes: string[] = ['Keyword', 'Identifier', 'Number', 'Punctuator', 'Punctuator', 'Operators']
+var col = -1;
+var row = 0
 
-function pushToken(token: Ttoken[], type: string, state: number, value: string) {
+const tokenTypes: string[] = ['', 'Keyword', 'Identifier', 'Number', 'Punctuator', 'Punctuator', 'Operators']
+
+function pushToken(
+  token: Ttoken[],
+  type: string,
+  state: number,
+  value: string,
+  col: number,
+  row: number,
+  start: number,
+) {
   token.push({
     type,
     state,
-    value
+    value,
+    col,
+    row,
+    start,
   })
 }
 
-function handlePush(chars: string[], token: Ttoken[], tokenState: number | null, state?: number) {
+function handlePush(
+  chars: string[],
+  token: Ttoken[],
+  tokenState: number | null,
+  _col: number,
+  _row: number,
+  state?: number
+) {
+  let c
   if (chars.length > 0) {
-    const c = chars.join('')
+    c = chars.join('')
     if (!tokenState) {
       switch (state) {
         case State.STRING:
           if (isKeyword(c)) {
-            pushToken(token, tokenTypes[TokenState.KEYWORD], TokenState.KEYWORD, c)
+            pushToken(token, tokenTypes[TokenState.KEYWORD], TokenState.KEYWORD, c, _col, _row, _col - c.length + 1)
           } else {
-            pushToken(token, tokenTypes[TokenState.IDNTIFIER], TokenState.IDNTIFIER, c)
+            pushToken(token, tokenTypes[TokenState.IDNTIFIER], TokenState.IDNTIFIER, c, _col, _row, _col - c.length + 1)
           }
           break
       }
     } else {
-      pushToken(token, tokenTypes[tokenState], tokenState, c)
+      if (c === 'rn') {
+        _col += 2
+      }
+      pushToken(token, tokenTypes[tokenState], tokenState, c, _col, _row, _col - c.length + 1)
+      if (c === 'rn') {
+        col = -1
+        row++
+      }
     }
     chars.length = 0
   }
+  return c
 }
 
 export function tokenize(s: string) {
@@ -58,15 +88,18 @@ export function tokenize(s: string) {
     switch (currentState) {
       case State.INITIAL:
         if (isAlpha(c)) {
+          chars.push(c)
+          s = s.slice(1)
+          col++
           currentState = State.STRING
-          chars.push(c)
-          s = s.slice(1)
         } else if (isDigit(c)) {
-          currentState = State.NUMBER
           chars.push(c)
           s = s.slice(1)
+          col++
+          currentState = State.NUMBER
         } else if (isSpace(c)) {
           s = s.slice(1)
+          col++
         } else if (isPunctuator(c)) {
           currentState = State.PUNCTUATOR
         } else if (isOperators(c)) {
@@ -77,17 +110,18 @@ export function tokenize(s: string) {
         if (isAlpha(c)) {
           chars.push(c)
           s = s.slice(1)
+          col++
         } else if (isDigit(c)) {
-          handlePush(chars, token, null, State.STRING)
+          handlePush(chars, token, null, State.STRING, col, row)
           currentState = State.NUMBER
         } else if (isSpace(c)) {
-          handlePush(chars, token, null, State.STRING)
+          handlePush(chars, token, null, col, row, State.STRING)
           currentState = State.INITIAL
         } else if (isPunctuator(c)) {
-          handlePush(chars, token, null, State.STRING)
+          handlePush(chars, token, null, col, row, State.STRING)
           currentState = State.PUNCTUATOR
         } else if (isOperators(c)) {
-          handlePush(chars, token, null, State.STRING)
+          handlePush(chars, token, null, col, row, State.STRING)
           currentState = State.OPERATORS
         }
         break
@@ -95,17 +129,18 @@ export function tokenize(s: string) {
         if (isDigit(c)) {
           chars.push(c)
           s = s.slice(1)
+          col++
         } else if (isAlpha(c)) {
-          handlePush(chars, token, TokenState.NUMBER)
+          handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.STRING
         } else if (isSpace(c)) {
-          handlePush(chars, token, TokenState.NUMBER)
+          handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.INITIAL
         } else if (isPunctuator(c)) {
-          handlePush(chars, token, TokenState.NUMBER)
+          handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
         } else if (isOperators(c)) {
-          handlePush(chars, token, TokenState.NUMBER)
+          handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.OPERATORS
         }
         break
@@ -113,25 +148,25 @@ export function tokenize(s: string) {
         if (isPunctuator(c)) {
           if (/(\r)/.test(c)) {
             chars.push('r')
-          }
-          else if (/(\n)/.test(c)) {
+          } else if (/(\n)/.test(c)) {
             chars.push('n')
           } else {
-            handlePush(chars, token, TokenState.PUNCTUATORBREAK)
-            pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c)
+            col++
+            handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
+            pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c, col, row, col - c.length + 1)
           }
           s = s.slice(1)
         } else if (isAlpha(c)) {
-          handlePush(chars, token, TokenState.PUNCTUATORBREAK)
+          handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
           currentState = State.STRING
         } else if (isDigit(c)) {
-          handlePush(chars, token, TokenState.PUNCTUATORBREAK)
+          handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
           currentState = State.NUMBER
         } else if (isSpace(c)) {
-          handlePush(chars, token, TokenState.PUNCTUATORBREAK)
+          handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
           currentState = State.INITIAL
         } else if (isOperators(c)) {
-          handlePush(chars, token, TokenState.PUNCTUATORBREAK)
+          handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
           currentState = State.OPERATORS
         }
         break
@@ -139,17 +174,18 @@ export function tokenize(s: string) {
         if (isOperators(c)) {
           chars.push(c)
           s = s.slice(1)
+          col++
         } else if (isAlpha(c)) {
-          handlePush(chars, token, TokenState.OPERATORS)
+          handlePush(chars, token, TokenState.OPERATORS, col, row)
           currentState = State.STRING
         } else if (isDigit(c)) {
-          handlePush(chars, token, TokenState.OPERATORS)
+          handlePush(chars, token, TokenState.OPERATORS, col, row)
           currentState = State.NUMBER
         } else if (isSpace(c)) {
-          handlePush(chars, token, TokenState.OPERATORS)
+          handlePush(chars, token, TokenState.OPERATORS, col, row)
           currentState = State.INITIAL
         } else if (isPunctuator(c)) {
-          handlePush(chars, token, TokenState.OPERATORS)
+          handlePush(chars, token, TokenState.OPERATORS, col, row)
           currentState = State.PUNCTUATOR
         }
         break

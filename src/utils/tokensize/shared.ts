@@ -1,36 +1,7 @@
-import { Ttoken } from "./types"
+import keyword from "./keyowrd"
+import operators from './operators'
+import punctuator from './punctuator'
 
-var operators = ["+", "-", "*", "/", "=", "<", ">", "!", "=", ".", "?", ":"]
-const punctuator = ["{", "}", ";", ",", "(", ")", "[", "]", '\r', '\n', '"', "'"]
-const keyword = [
-  "break",
-  "case",
-  "catch",
-  "continue",
-  "const",
-  "default",
-  "delete",
-  "do",
-  "else",
-  "finally",
-  "for",
-  "function",
-  "if",
-  "in",
-  "instanceof",
-  "let",
-  "new",
-  "return",
-  "switch",
-  "this",
-  "throw",
-  "try",
-  "typepf",
-  "var",
-  "void",
-  "while",
-  "with"
-]
 
 function isAlpha(c: string) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_'
@@ -55,9 +26,6 @@ function isOperators(c: string) {
 function isKeyword(c: string) {
   return keyword.includes(c)
 }
-
-
-
 
 export {
   isAlpha,

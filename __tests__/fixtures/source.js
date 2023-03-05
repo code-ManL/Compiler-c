@@ -5,6 +5,7 @@ function add(a, b) {
     while (j < i) {
       j++
       console.log(j + "123")
+      console.log(`${1}`)
     }
   }
   return a > b ? 1 : 2;
