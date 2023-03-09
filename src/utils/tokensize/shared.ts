@@ -29,7 +29,10 @@ function isKeyword(c: string) {
 
 function isOct(c: string) {
   return c === 'x' || c === 'X'
+}
 
+function isHex(c: string) {
+  return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
 }
 
 export {
@@ -39,5 +42,6 @@ export {
   isPunctuator,
   isOperators,
   isKeyword,
-  isOct
+  isOct,
+  isHex
 }
