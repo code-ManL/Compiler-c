@@ -4,10 +4,9 @@ function add(a, b) {
     let j = 0
     while (j < i) {
       j++
-      console.log(j + "123")
-      console.log(`${1}`)
+      console.log(j)
+      console.log(j + "dawdaw")
     }
   }
   return a > b ? 1 : 2;
 }
-// 21312
