@@ -37,12 +37,12 @@ describe.only('parser', async () => {
           "value": "=",
         },
         {
-          "col": 20,
+          "col": 10,
           "row": 0,
-          "start": 8,
+          "start": 7,
           "state": 9,
           "type": "Error",
-          "value": "10232.121003.",
+          "value": "031x",
         },
       ]
     `)
