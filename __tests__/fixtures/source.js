@@ -1,4 +1,4 @@
-function add(a, b) {
+function 2add(a, b) {
   let a = 1
   for (let i = 0; i < 3; i++) {
     let j = 0
@@ -10,3 +10,5 @@ function add(a, b) {
   }
   return a > b ? 1 : 2;
 }
+
+// e1312

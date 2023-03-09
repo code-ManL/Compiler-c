@@ -4,7 +4,7 @@ import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { cpp } from "@codemirror/lang-cpp";
 import { rust } from "@codemirror/lang-rust";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { eclipse } from "@uiw/codemirror-theme-eclipse";
 import { abcdef } from "@uiw/codemirror-theme-abcdef";
 import store from "../../store/theme";
@@ -36,6 +36,7 @@ function Codemirror() {
     theme: theme,
   });
 
+
   store.subscribe(() => {
     const state = store.getState();
     if (state.dark) {
@@ -49,12 +50,12 @@ function Codemirror() {
     if (editor.current) {
       setContainer(editor.current);
     }
-  }, [editor.current]);
+  }, []);
 
   return (
     <div className="codemirror">
-      <div ref={editor}></div>
-    </div>
+      <div ref={editor} ></div>
+    </div >
   );
 }
 
