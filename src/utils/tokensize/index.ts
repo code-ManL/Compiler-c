@@ -176,6 +176,7 @@ export function tokenize(s: string) {
         break
       case State.STRING:
         chars.push(c)
+        // #2: the case like let a = 'rea or let a = 'dwa(/r/n)
         if (/(\r)/.test(c) || (s.length === 1 && c !== chars[0])) {
           handlePush(chars, token, TokenState.ERROR, col, row)
           return token
@@ -189,7 +190,14 @@ export function tokenize(s: string) {
       case State.NUMBER:
         if (isDigit(c) || c === '.') {
           col++
-          if ((chars.length === 1 && chars[0] === '0' && c !== '.') || (c === '.' && chars.join('').indexOf('.') != -1)) {
+          if (
+            // #5: when the chars begin of 0x or 0X，can no longer be assigned with a dot 
+            (chars[1] && (chars[1] === 'x' || chars[1] === 'X') && c === '.')
+            // #1: the case like 01.213(begin of 0 and not end with a dot) 
+            || (chars.length === 1 && chars[0] === '0' && c !== '.')
+            // #4: the case like 0.0.123(multiple dot)
+            || (c === '.' && chars.join('').indexOf('.') != -1)
+          ) {
             chars.push(c)
             handlePush(chars, token, TokenState.ERROR, col, row)
             return token
@@ -197,8 +205,13 @@ export function tokenize(s: string) {
           chars.push(c)
           s = s.slice(1)
         } else if (isAlpha(c)) {
-          handlePush(chars, token, TokenState.NUMBER, col, row)
-          currentState = State.CHARACTER
+          if (chars.length === 1 && chars[0] === '0' && (c === 'x' || c === 'X')) {
+            chars.push(c)
+            s = s.slice(1)
+          } else {
+            handlePush(chars, token, TokenState.NUMBER, col, row)
+            currentState = State.CHARACTER
+          }
         } else if (isSpace(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.INITIAL
@@ -221,7 +234,7 @@ export function tokenize(s: string) {
             if (c === '"' || c === "'" || c === '`') {
               currentState = State.STRING
               break
-            } else if (/(\r)/.test(c) || /(\n)/.test(c)) {
+            } else if (/(\r)/.test(c) || /(\n)/.test(c)) { // #3: multiple (/r/n)
               break
             } else {
               col++
@@ -262,6 +275,7 @@ export function tokenize(s: string) {
           temp = handlePush(chars, token, null, col, row, State.OPERATORS)
           currentState = State.PUNCTUATOR
         }
+        // #6: when the temp is not a legitimate operators，return 
         if (temp && !isOperators(temp)) {
           return token
         }
