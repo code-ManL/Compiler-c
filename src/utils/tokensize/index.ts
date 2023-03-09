@@ -69,11 +69,15 @@ function handlePush(
             pushToken(token, tokenTypes[TokenState.IDNTIFIER], TokenState.IDNTIFIER, c, _col, _row, _col - c.length + 1)
           }
           break
+        case State.OPERATORS:
+          if (isOperators(c)) {
+            pushToken(token, tokenTypes[TokenState.OPERATORS], TokenState.OPERATORS, c, _col, _row, _col - c.length + 1)
+          } else {
+            pushToken(token, tokenTypes[TokenState.ERROR], TokenState.ERROR, c, col, row, col - c.length + 1)
+          }
       }
     } else {
       if (c === 'rn') {
-        console.log(_col);
-
         _col += 2
       }
       pushToken(token, tokenTypes[tokenState], tokenState, c, _col, _row, _col - c.length + 1)
@@ -139,20 +143,43 @@ export function tokenize(s: string) {
         }
         break
       case State.KEYWORD_OPEN:
-        if (isSpace(c)) {
-          s = s.slice(1)
-        } else if (isDigit(c)) {
-          console.log('error');
-          pushToken(token, tokenTypes[TokenState.ERROR], TokenState.ERROR, c, col, row, col - c.length + 1)
-          return token
-        }else if(isAlpha(c)){
-
-          
+        if (chars.length === 0) {
+          if (isSpace(c)) {
+            s = s.slice(1)
+            col++
+          } else if (isDigit(c) || isOperators(c)) {
+            pushToken(token, tokenTypes[TokenState.ERROR], TokenState.ERROR, c, col, row, col - c.length + 1)
+            return token
+          } else if (isPunctuator(c)) {
+            currentState = State.PUNCTUATOR
+          } else {
+            chars.push(c)
+            s = s.slice(1)
+            col++
+          }
+        } else {
+          if (isSpace(c)) {
+            handlePush(chars, token, TokenState.IDNTIFIER, col, row)
+            currentState = State.INITIAL
+          } else if (isOperators(c)) {
+            pushToken(token, tokenTypes[TokenState.ERROR], TokenState.ERROR, c, col, row, col - c.length + 1)
+            return token
+          } else if (isPunctuator(c)) {
+            handlePush(chars, token, TokenState.IDNTIFIER, col, row)
+            currentState = State.PUNCTUATOR
+          } else {
+            chars.push(c)
+            s = s.slice(1)
+            col++
+          }
         }
         break
       case State.STRING:
         chars.push(c)
-        if (chars.length > 1 && c === chars[0]) {
+        if (/(\r)/.test(c) || (s.length === 1 && c !== chars[0])) {
+          handlePush(chars, token, TokenState.ERROR, col, row)
+          return token
+        } else if (chars.length > 1 && c === chars[0]) {
           handlePush(chars, token, TokenState.STRING, col, row)
           currentState = State.INITIAL
         }
@@ -160,10 +187,15 @@ export function tokenize(s: string) {
         col++
         break
       case State.NUMBER:
-        if (isDigit(c)) {
+        if (isDigit(c) || c === '.') {
+          col++
+          if ((chars.length === 1 && chars[0] === '0' && c !== '.') || (c === '.' && chars.join('').indexOf('.') != -1)) {
+            chars.push(c)
+            handlePush(chars, token, TokenState.ERROR, col, row)
+            return token
+          }
           chars.push(c)
           s = s.slice(1)
-          col++
         } else if (isAlpha(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.CHARACTER
@@ -178,16 +210,6 @@ export function tokenize(s: string) {
           currentState = State.OPERATORS
         }
         break
-      // case State.TEMPLATE:
-      //   chars.push(c)
-      //   if (c === '{') {
-      //     handlePush(chars, token, TokenState.TEMPLATE, col, row)
-      //   }else if(isAlpha(c)){
-      //     chars.push(c)
-      //   }
-      //   s = s.slice(1)
-      //   col++
-      //   break
       case State.PUNCTUATOR:
         if (isPunctuator(c)) {
           if (/(\r)/.test(c) && chars.join('') !== 'rn') {
@@ -199,11 +221,9 @@ export function tokenize(s: string) {
             if (c === '"' || c === "'" || c === '`') {
               currentState = State.STRING
               break
-            }
-            //  else if (c === '`') {
-            //   currentState = State.TEMPLATE
-            // } 
-            else {
+            } else if (/(\r)/.test(c) || /(\n)/.test(c)) {
+              break
+            } else {
               col++
               pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c, col, row, col - c.length + 1)
             }
@@ -224,22 +244,26 @@ export function tokenize(s: string) {
         }
         break
       case State.OPERATORS:
+        let temp
         if (isOperators(c)) {
           chars.push(c)
           s = s.slice(1)
           col++
         } else if (isAlpha(c)) {
-          handlePush(chars, token, TokenState.OPERATORS, col, row)
+          temp = handlePush(chars, token, null, col, row, State.OPERATORS)
           currentState = State.CHARACTER
         } else if (isDigit(c)) {
-          handlePush(chars, token, TokenState.OPERATORS, col, row)
+          temp = handlePush(chars, token, null, col, row, State.OPERATORS)
           currentState = State.NUMBER
         } else if (isSpace(c)) {
-          handlePush(chars, token, TokenState.OPERATORS, col, row)
+          temp = handlePush(chars, token, null, col, row, State.OPERATORS)
           currentState = State.INITIAL
         } else if (isPunctuator(c)) {
-          handlePush(chars, token, TokenState.OPERATORS, col, row)
+          temp = handlePush(chars, token, null, col, row, State.OPERATORS)
           currentState = State.PUNCTUATOR
+        }
+        if (temp && !isOperators(temp)) {
+          return token
         }
         break
     }
