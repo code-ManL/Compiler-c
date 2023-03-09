@@ -1,5 +1,5 @@
 import { Ttoken } from "./types";
-import { isAlpha, isDigit, isOperators, isPunctuator, isSpace, isKeyword, } from "./shared";
+import { isAlpha, isDigit, isOperators, isPunctuator, isSpace, isKeyword, isOct } from "./shared";
 
 enum State {
   INITIAL = 0,
@@ -192,7 +192,7 @@ export function tokenize(s: string) {
           col++
           if (
             // #5: when the chars begin of 0x or 0X，can no longer be assigned with a dot 
-            (chars[1] && (chars[1] === 'x' || chars[1] === 'X') && c === '.')
+            (chars[1] && isOct(chars[1]) && c === '.')
             // #1: the case like 01.213(begin of 0 and not end with a dot) 
             || (chars.length === 1 && chars[0] === '0' && c !== '.')
             // #4: the case like 0.0.123(multiple dot)
@@ -205,9 +205,15 @@ export function tokenize(s: string) {
           chars.push(c)
           s = s.slice(1)
         } else if (isAlpha(c)) {
-          if (chars.length === 1 && chars[0] === '0' && (c === 'x' || c === 'X')) {
+          if (chars.length === 1 && chars[0] === '0' && isOct(c)) {
             chars.push(c)
             s = s.slice(1)
+          }
+          // #7: begin withe 0x and then push character agian
+          else if (chars.length >= 2 && chars[0] === '0' && isOct(chars[1])) {
+            chars.push(c)
+            handlePush(chars, token, TokenState.ERROR, col, row)
+            return token
           } else {
             handlePush(chars, token, TokenState.NUMBER, col, row)
             currentState = State.CHARACTER

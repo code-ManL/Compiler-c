@@ -27,6 +27,11 @@ function isKeyword(c: string) {
   return keyword.includes(c)
 }
 
+function isOct(c: string) {
+  return c === 'x' || c === 'X'
+
+}
+
 export {
   isAlpha,
   isDigit,
@@ -34,4 +39,5 @@ export {
   isPunctuator,
   isOperators,
   isKeyword,
+  isOct
 }
