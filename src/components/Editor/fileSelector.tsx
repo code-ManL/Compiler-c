@@ -9,14 +9,14 @@ function FileSelector(props: IEditorProps) {
   const pendingFileDom = useRef<null | HTMLDivElement>(null)
 
   // 文件队列
-  const [files, useFiles] = useState(['main.c'])
+  const [files, useFiles] = useState(['index.js'])
 
-  const importMapFile = 'other.c'
+  const importMapFile = 'other.js'
 
   // 新增文件
-  const [pendingFilename, usePendingFilename] = useState('comp.c')
+  const [pendingFilename, usePendingFilename] = useState('other.js')
   const [pending, usePending] = useState(false)
-  const [activeFile, useActive] = useState('main.c')
+  const [activeFile, useActive] = useState('index.js')
 
   useEffect(() => {
     if (pending === true) {
@@ -26,13 +26,13 @@ function FileSelector(props: IEditorProps) {
 
   const startAddFile = () => {
     let i = 0
-    let name = `comp.c`
+    let name = `other.js`
 
     while (true) {
       let hasConflict = false
       for (const file of files) {
         if (file === name) {
-          name = `comp${++i}.c`
+          name = `other${++i}.js`
           break
         }
       }

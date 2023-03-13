@@ -1,4 +1,9 @@
-function isAlpha(c) {
-  //   e1e1 21312 412 41
+function add(a, b) {
+  return a + b
 }
 
+function main() {
+  let a = 1;
+  let b = 2;
+  return add(a, b);
+}

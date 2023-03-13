@@ -8,6 +8,10 @@ function Output() {
 
   const [mode, useMode] = useState(modes[0]);
 
+  function handleCheck(k: number) {
+    useMode(modes[k])
+  }
+
   return (
     <>
       <div className="output-pane">
@@ -17,7 +21,7 @@ function Output() {
               <button
                 key={k}
                 className={`${mode == item ? "active" : ""}`}
-                onClick={() => useMode(modes[k])}
+                onClick={() => handleCheck(k)}
               >
                 <span>{item}</span>
               </button>
@@ -25,7 +29,7 @@ function Output() {
           })}
         </div>
         <div className="output-container">
-          <Codemirror />
+          <Codemirror output/>
         </div>
       </div>
       <div className="console-pane">

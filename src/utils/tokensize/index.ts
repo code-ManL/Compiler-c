@@ -26,6 +26,8 @@ enum TokenState {
   COMMENT = 10
 }
 
+// var col = -1;
+// var row = 0
 var col = -1;
 var row = 0
 
@@ -79,14 +81,14 @@ function handlePush(
           }
       }
     } else {
-      if (c === 'rn') {
-        _col += 2
-      }
+      // if (c === 'rn') {
+      //   _col += 2
+      // }
       pushToken(token, tokenTypes[tokenState], tokenState, c, _col, _row, _col - c.length + 1)
-      if (c === 'rn') {
-        col = -1
-        row++
-      }
+      // if (c === 'rn') {
+      //   col = -1
+      //   row++
+      // }
     }
     chars.length = 0
   }
@@ -97,9 +99,11 @@ export function tokenize(s: string) {
   let token: Ttoken[] = []
   const chars: string[] = []
   let currentState = State.INITIAL
+  col = -1;
+  row = 0
 
   while (s) {
-    const c = s[0]
+    let c = s[0]
     switch (currentState) {
       case State.INITIAL:
         if (isAlpha(c)) {
@@ -163,7 +167,7 @@ export function tokenize(s: string) {
           if (isSpace(c)) {
             handlePush(chars, token, TokenState.IDNTIFIER, col, row)
             currentState = State.INITIAL
-          } else if (isOperators(c)) {
+          } else if (isOperators(c) && c !== '.') { // #8: expect(return obj.fn()).not.toWarnError() 
             pushToken(token, tokenTypes[TokenState.ERROR], TokenState.ERROR, c, col, row, col - c.length + 1)
             return token
           } else if (isPunctuator(c)) {
@@ -241,22 +245,18 @@ export function tokenize(s: string) {
         }
         break
       case State.PUNCTUATOR:
+        console.dir(c);
         if (isPunctuator(c)) {
-          if (/(\r)/.test(c) && chars.length === 0) {
-            chars.push('r')
-          } else if (/(\n)/.test(c) && chars.length === 1) {
-            chars.push('n')
+          if (/(\r)/.test(c)) {
+            c = '//r'
+          } else if (/(\n)/.test(c)) {
+            c = '//n'
+          } else if (c === '"' || c === "'" || c === '`') {
+            currentState = State.STRING
+            break
           } else {
-            handlePush(chars, token, TokenState.PUNCTUATORBREAK, col, row)
-            if (c === '"' || c === "'" || c === '`') {
-              currentState = State.STRING
-              break
-            } else if (/(\r)/.test(c) || /(\n)/.test(c)) { // #3: multiple (/r/n)
-              break
-            } else {
-              col++
-              pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c, col, row, col - c.length + 1)
-            }
+            col++
+            pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c, col, row, col - c.length + 1)
           }
           s = s.slice(1)
         } else if (isAlpha(c)) {
@@ -274,13 +274,23 @@ export function tokenize(s: string) {
         }
         break
       case State.COMMENT:
-        if (!/(\r)/.test(c)) {
+        if (chars[0] === '/' && chars[1] === '/') {
+          if (!/(\r)/.test(c)) {
+            chars.push(c)
+            s = s.slice(1)
+            col++
+          } else {
+            handlePush(chars, token, TokenState.COMMENT, col, row)
+            currentState = State.INITIAL
+          }
+        } else {
           chars.push(c)
           s = s.slice(1)
           col++
-        } else {
-          handlePush(chars, token, TokenState.COMMENT, col, row)
-          currentState = State.PUNCTUATOR
+          if (c === '/' && chars[chars.length - 2] === '*') {
+            handlePush(chars, token, TokenState.COMMENT, col, row)
+            currentState = State.INITIAL
+          }
         }
         break
       case State.OPERATORS:
@@ -289,10 +299,10 @@ export function tokenize(s: string) {
           chars.push(c)
           s = s.slice(1)
           col++
-        } else if (chars.length === 1 && chars[0] === '/' && c !== '/') {
+        } else if (chars.length === 1 && chars[0] === '/' && (c !== '/' && c !== '*')) {
           handlePush(chars, token, TokenState.ERROR, col, row)
           return token
-        } else if (chars.length === 2 && chars[0] === '/' && chars[1] === '/') {
+        } else if (chars.length === 2 && chars[0] === '/' && (chars[1] === '/' || chars[1] === "*")) {
           currentState = State.COMMENT
         } else if (isAlpha(c)) {
           temp = handlePush(chars, token, null, col, row, State.OPERATORS)

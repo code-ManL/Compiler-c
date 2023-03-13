@@ -17,6 +17,7 @@ export default [
   "else",
   "enum",
   "eval",
+  "from",
   "export",
   "extends",
   "false",

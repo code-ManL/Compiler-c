@@ -69,7 +69,7 @@ function Source() {
         <div className="dragger" onMouseDown={dragStart}>
           <span>==</span>
         </div>
-        <Editor fileTitle="Compiler"></Editor>
+        {/* <Editor fileTitle="Compiler"></Editor> */}
       </div>
     </div>
   );

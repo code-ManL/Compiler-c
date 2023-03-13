@@ -8,34 +8,72 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { eclipse } from "@uiw/codemirror-theme-eclipse";
 import { abcdef } from "@uiw/codemirror-theme-abcdef";
 import store from "../../store/theme";
+import CodeMirror from '@uiw/react-codemirror';
+import storeCode from "../../store/tokenlize";
+import { tokenize } from '../../utils/tokensize'
+
 
 import "./index.scss";
+import { Ttoken } from "../../utils/tokensize/types";
 
-const code = `
-int add(int a,int b){
-  return a + b
-}
-
-int main(){
-    int a = 1;
-    int b = 2;
-    return add(a,b);
-}`;
 
 const extensions = [javascript(), python(), java(), cpp(), rust()];
 
-function Codemirror() {
-  const editor = useRef(null);
+
+interface Iprops {
+  input?: boolean,
+  output?: boolean,
+  inputName?: string
+}
+
+
+function formatter(token: Ttoken[]) {
+  let s = `[
+  `
+  for (const item of token) {
+    s = s + `{
+      `+ JSON.stringify(item).slice(1, -1).split(',').join(`,\n      `) + `\n    },\n    `
+  }
+  s = s + ']'
+  return s
+}
+
+function Codemirror(props: Iprops) {
+  // console.log('zoule1');
+
+  // 判断当前是哪个页面
+  const { input, output, inputName } = props
+
+  let [code, setCode] = useState<string>('')
+
+  useEffect(() => {
+    if (!output) {
+
+      setCode(`function add(a, b) {
+  return a + b
+}
+
+function main() {
+  let a = 1;
+  let b = 2;
+  return add(a, b);
+}
+    `)
+      storeCode.dispatch({
+        type: 'da',
+      });
+    } else {
+      storeCode.subscribe(() => {
+        const state = storeCode.getState();
+        console.log(output);
+        const res = formatter(tokenize(state))
+        // console.log(state);
+        setCode(res)
+      });
+    }
+  }, [])
 
   const [theme, useTheme] = useState(eclipse);
-
-  const { setContainer } = useCodeMirror({
-    container: editor.current,
-    extensions,
-    value: code,
-    theme: theme,
-  });
-
 
   store.subscribe(() => {
     const state = store.getState();
@@ -46,15 +84,25 @@ function Codemirror() {
     }
   });
 
-  useEffect(() => {
-    if (editor.current) {
-      setContainer(editor.current);
+  const handleChange = useCallback((value: string) => {
+    if (!output) {
+      storeCode.dispatch({
+        type: 'code',
+        code: value
+      })
     }
+    console.log('value:', value);
   }, []);
+
 
   return (
     <div className="codemirror">
-      <div ref={editor} ></div>
+      <CodeMirror
+        value={code}
+        extensions={extensions}
+        theme={theme}
+        onChange={handleChange}
+      />
     </div >
   );
 }
