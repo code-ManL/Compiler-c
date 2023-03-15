@@ -318,6 +318,7 @@ export function tokenize(s: string) {
           currentState = State.PUNCTUATOR
         }
         // #6: when the temp is not a legitimate operators，return 
+        
         if (temp && !isOperators(temp)) {
           return token
         }
