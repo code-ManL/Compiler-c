@@ -1,5 +1,5 @@
 import { Ttoken } from "./types";
-import { isAlpha, isDigit, isOperators, isPunctuator, isSpace, isKeyword, isOct, isHex } from "./shared";
+import { isAlpha, isDigit, isOperators, isPunctuator, isSpace, isKeyword, isOct, isHex, isX, isE } from "./shared";
 
 enum State {
   INITIAL = 0,
@@ -10,7 +10,10 @@ enum State {
   STRING = 5,
   TEMPLATE = 6,
   KEYWORD_OPEN = 7,
-  COMMENT = 8
+  COMMENT = 8,
+  E_OPEN = 9,
+  OCT = 10,
+  HEX = 11
 }
 
 enum TokenState {
@@ -23,7 +26,10 @@ enum TokenState {
   STRING = 7,
   TEMPLATE = 8,
   ERROR = 9,
-  COMMENT = 10
+  COMMENT = 10,
+  E_OPEN = 11,
+  OCT = 12,
+  HEX = 13
 }
 
 // var col = -1;
@@ -84,14 +90,8 @@ function handlePush(
           }
       }
     } else {
-      // if (c === 'rn') {
-      //   _col += 2
-      // }
       pushToken(token, tokenTypes[tokenState], tokenState, c, _col, _row, _col - c.length + 1)
-      // if (c === 'rn') {
-      //   col = -1
-      //   row++
-      // }
+    
     }
     chars.length = 0
   }
@@ -135,7 +135,6 @@ export function tokenize(s: string) {
           col++
         } else if (isDigit(c)) {
           handlePush(chars, token, null, col, row, State.CHARACTER)
-
           currentState = State.NUMBER
         } else if (isSpace(c)) {
           const c = handlePush(chars, token, null, col, row, State.CHARACTER)
@@ -215,37 +214,84 @@ export function tokenize(s: string) {
           chars.push(c)
           s = s.slice(1)
         } else if (isAlpha(c)) {
-          chars.push(c)
-          if ((chars.length === 2 && chars[0] === '0' && isOct(c))
-            // #8: when the chars begin of 0x
-            // allow the follow character around [a-fA-F]
-            || (chars.length > 2 && chars[0] === '0' && isOct(chars[1]) && isHex(c))
-          ) {
+          if (chars.length === 1 && chars[0] === '0' && (isOct(c) || isE(c))) {
+            currentState = State.OCT
+          } else if (chars.length === 1 && chars[0] === '0' && isX(c)) {
+            chars.push(c)
             s = s.slice(1)
-          } else if ((chars.length > 2 && !(chars[0] === '0' && isOct(chars[1])))
-            || (chars.length > 2 && chars[0] === '0' && isOct(chars[1]) && !isHex(c))
-          ) {
+            currentState = State.HEX
+          } else {
+            chars.push(c)
             handlePush(chars, token, TokenState.ERROR, col, row)
             return token
           }
-        } else if (isSpace(c)) {
+        } else if (isOperators(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
-          currentState = State.INITIAL
+          currentState = State.OPERATORS
+        } else if (isPunctuator(c)) {
+          handlePush(chars, token, TokenState.PUNCTUATOR, col, row)
+          currentState = State.PUNCTUATOR
+        }
+        break
+      case State.OCT:
+        if (isAlpha(c)) {
+          if (isE(c) && chars.join('').indexOf('E') === -1 && chars.join('').indexOf('e') === -1) {
+            chars.push(c)
+            s = s.slice(1)
+          } else {
+            chars.push(c)
+            handlePush(chars, token, TokenState.ERROR, col, row)
+            return token
+          }
+        } else if (isOct(c)) {
+          chars.push(c)
+          s = s.slice(1)
+        } else if (isOperators(c)) {
+          if (c === '+' || c === '-' && isE(chars[chars.length - 1])) {
+            chars.push(c)
+            s = s.slice(1)
+            currentState = State.E_OPEN
+          } else {
+            handlePush(chars, token, TokenState.NUMBER, col, row)
+            currentState = State.OPERATORS
+          }
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
+        }
+        break
+      case State.HEX:
+        if (isHex(c)) {
+          chars.push(c)
+          s = s.slice(1)
+        } else if (isDigit(c)) {
+          chars.push(c)
+          s = s.slice(1)
         } else if (isOperators(c)) {
-          if ((c === '+' || c === '-') && (chars.join('').indexOf('+') !== -1 || chars.join('').indexOf('-') !== -1)) {
+          if (c === '+' || c === '-' && isE(chars[chars.length - 1])) {
             chars.push(c)
-            handlePush(chars, token, TokenState.ERROR, col, row)
-            return token
-          } else if ((c === '+' || c === '-') && (chars[chars.length - 1] === 'E' || chars[chars.length - 1] === 'e')) {
-            chars.push(c)
-            s.slice(1)
-            col++
+            s = s.slice(1)
+            currentState = State.E_OPEN
+          } else {
+            handlePush(chars, token, TokenState.NUMBER, col, row)
+            currentState = State.OPERATORS
           }
+        } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
-          currentState = State.OPERATORS
+          currentState = State.PUNCTUATOR
+        }
+        break
+      case State.E_OPEN:
+        if (isDigit(c)) {
+          chars.push(c)
+          s = s.slice(1)
+        } else if (isPunctuator(c)) {
+          handlePush(chars, token, TokenState.NUMBER, col, row)
+          currentState = State.PUNCTUATOR
+        } else {
+          chars.push(c)
+          handlePush(chars, token, TokenState.ERROR, col, row)
+          return token
         }
         break
       case State.PUNCTUATOR:

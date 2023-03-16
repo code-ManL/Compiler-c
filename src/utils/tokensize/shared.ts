@@ -28,13 +28,20 @@ function isKeyword(c: string) {
 }
 
 function isOct(c: string) {
-  return c === 'x' || c === 'X'
+  return c >= '0' && c <= '7'
+}
+
+function isE(c: string) {
+  return c === 'e' || c === 'E'
 }
 
 function isHex(c: string) {
   return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
 }
 
+function isX(c: string) {
+  return c === 'x' || c === 'X'
+}
 export {
   isAlpha,
   isDigit,
@@ -43,5 +50,7 @@ export {
   isOperators,
   isKeyword,
   isOct,
-  isHex
+  isHex,
+  isX,
+  isE
 }

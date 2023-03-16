@@ -13,28 +13,36 @@ describe.only('parser', async () => {
     expect(tokenize(code)).toMatchInlineSnapshot(`
       [
         {
-          "col": 7,
+          "col": 2,
           "row": 0,
           "start": 0,
           "state": 1,
           "type": "Keyword",
-          "value": "function",
+          "value": "var",
         },
         {
-          "col": 8,
+          "col": 4,
           "row": 0,
-          "start": 8,
-          "state": 3,
-          "type": "Number",
-          "value": "3",
+          "start": 4,
+          "state": 2,
+          "type": "Identifier",
+          "value": "a",
         },
         {
-          "col": 10,
+          "col": 6,
+          "row": 0,
+          "start": 6,
+          "state": 6,
+          "type": "Operators",
+          "value": "=",
+        },
+        {
+          "col": 12,
           "row": 0,
           "start": 8,
           "state": 9,
           "type": "Error",
-          "value": "1aa",
+          "value": "0213.",
         },
       ]
     `)
