@@ -16,16 +16,13 @@ import { tokenize } from '../../utils/tokensize'
 import "./index.scss";
 import { Ttoken } from "../../utils/tokensize/types";
 
-
 const extensions = [javascript(), python(), java(), cpp(), rust()];
-
 
 interface Iprops {
   input?: boolean,
   output?: boolean,
   inputName?: string
 }
-
 
 function formatter(token: Ttoken[]) {
   let s = `[

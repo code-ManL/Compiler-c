@@ -61,14 +61,17 @@ function handlePush(
   state?: number
 ) {
   let c
+
   if (chars.length > 0) {
+
     c = chars.join('')
+
     if (!tokenState) {
       switch (state) {
+
         case State.CHARACTER:
           if (isKeyword(c)) {
             pushToken(token, tokenTypes[TokenState.KEYWORD], TokenState.KEYWORD, c, _col, _row, _col - c.length + 1)
-
           } else {
             pushToken(token, tokenTypes[TokenState.IDNTIFIER], TokenState.IDNTIFIER, c, _col, _row, _col - c.length + 1)
           }
@@ -131,7 +134,8 @@ export function tokenize(s: string) {
           s = s.slice(1)
           col++
         } else if (isDigit(c)) {
-          handlePush(chars, token, null, State.CHARACTER, col, row)
+          handlePush(chars, token, null, col, row, State.CHARACTER)
+
           currentState = State.NUMBER
         } else if (isSpace(c)) {
           const c = handlePush(chars, token, null, col, row, State.CHARACTER)
@@ -245,7 +249,6 @@ export function tokenize(s: string) {
         }
         break
       case State.PUNCTUATOR:
-        console.dir(c);
         if (isPunctuator(c)) {
           if (/(\r)/.test(c)) {
             c = '//r'
@@ -318,7 +321,7 @@ export function tokenize(s: string) {
           currentState = State.PUNCTUATOR
         }
         // #6: when the temp is not a legitimate operators，return 
-        
+
         if (temp && !isOperators(temp)) {
           return token
         }
