@@ -5,10 +5,10 @@ type Taction = {
   code?: string
 }
 
-
 const code = `
 function add(a, b) {
   return a + b
+  
 }
 
 function main() {
