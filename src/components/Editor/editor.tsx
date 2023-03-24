@@ -8,7 +8,7 @@ function Editor(props: IEditorProps) {
     <>
       <FileSelector {...props}></FileSelector>
       <div className="editor-container">
-        <Codemirror />
+        <Codemirror output={false} />
       </div>
     </>
   );

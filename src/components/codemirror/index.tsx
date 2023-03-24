@@ -40,31 +40,24 @@ function Codemirror(props: Iprops) {
 
   // 判断当前是哪个页面
   const { input, output, inputName } = props
+  console.log(output);
 
   let [code, setCode] = useState<string>('')
 
   useEffect(() => {
     if (!output) {
-
-      setCode(`function add(a, b) {
-  return a + b
-}
-
-function main() {
-  let a = 1;
-  let b = 2;
-  return add(a, b);
-}
-    `)
       storeCode.dispatch({
-        type: 'da',
+        type: 'common',
+      });
+      storeCode.subscribe(() => {
+        const state = storeCode.getState();
+        setCode(state)
       });
     } else {
       storeCode.subscribe(() => {
         const state = storeCode.getState();
-        console.log(output);
+        console.log(state, output);
         const res = formatter(tokenize(state))
-        // console.log(state);
         setCode(res)
       });
     }
