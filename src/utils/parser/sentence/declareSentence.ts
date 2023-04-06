@@ -7,31 +7,16 @@ import { functionDeclareSentence_first, functionDeclareSentence_follow, function
  * @default: <声明语句> => <值声明> | <函数声明> | 3
  */
 function declareSentence() {
-  let token = getNextToken()
-  if (valueDeclareSentence_first.includes(token.value)) {
-    valueDeclareSentence()
-  } else if (functionDeclareSentence_first.includes(token.value)) {
-    functionDeclareSentence()
-  }
-}
-export var declareSentence_first: string[] = ['const', 'let', 'var']
-export var declareSentence_follow: string[] = []
 
+}
 
 /**
  * 值声明
  * @default: <值声明> => <变量声明>
  */
 function valueDeclareSentence() {
-  let token = getNextToken()
-  if (valueDeclareSentence_first.includes(token.value)) {
-    variableDeclareSentence()
-  } else {
 
-  }
 }
-var valueDeclareSentence_first: string[] = ['const', 'let', 'var']
-var valueDeclareSentence_follow: string[] = []
 
 
 /**
@@ -39,10 +24,7 @@ var valueDeclareSentence_follow: string[] = []
  * @default: <变量声明> => <变量类型><变量声明表>
  */
 function variableDeclareSentence() {
-  let token = getNextToken()
-  if (variableTypeDeclareSentence_first.includes(token.value)) {
-    variableTypeDeclareSentence()
-  }
+ 
 }
 var variableDeclareSentence_first: string[] = ['const', 'let', 'var']
 var variableDeclareSentence_follow: string[] = []
@@ -80,8 +62,6 @@ function variableTypeDeclareSentence() {
 
 
 }
-var variableTypeDeclareSentence_first: string[] = ['const', 'let', 'var']
-var variableTypeDeclareSentence_follow: string[] = []
 
 
 

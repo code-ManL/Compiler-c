@@ -9,17 +9,9 @@ import { expresstion } from '../expression/index'
  * 
  */
 function executeSentence() {
-  let token = getNextToken()
-  if (solveDataSentence_first.includes(token.value)) {
-    solveDataSentence()
-  } else if (controlSentence_first.includes(token.value)) {
-
-  } else if (circleComputedSentence_first.includes(token.value)) {
-
-  }
+ 
 }
-export var executeSentence_first: string[] = []
-export var executeSentence_follow: string[] = []
+
 
 
 
@@ -31,8 +23,6 @@ function solveDataSentence() {
 
 
 }
-var solveDataSentence_first: string[] = []
-var solveDataSentence_follow: string[] = []
 
 
 
@@ -76,8 +66,7 @@ function controlSentence() {
 
 
 }
-var controlSentence_first: string[] = []
-var controlSentence_follow: string[] = []
+
 
 
 

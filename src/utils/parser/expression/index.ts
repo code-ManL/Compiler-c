@@ -15,8 +15,7 @@ import { relationExpression } from './relationExpresstion'
 export function expresstion() {
 }
 
-export var expresstion_first: string[] = []
-export var expresstion_follow: string[] = []
+
 
 
 

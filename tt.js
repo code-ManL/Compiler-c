@@ -1,50 +1,3 @@
-import type { Ttoken } from '../tokensize/types'
-
-// mock tokens
-var tokens: Ttoken[] = [
-  {
-    type: '',
-    state: 1,
-    value: '',
-    col: 1,
-    row: 2,
-    start: 1,
-  }
-]
-
-
-// 报错
-export function toThrowError(error: string) {
-  console.log(error);
-}
-
-// 获取下一个token
-export function getNextToken() {
-  return tokens.shift() || { value: 'end' }
-}
-
-
-
-export function getFirst() {
-
-
-
-}
-
-
-export function getFollow() {
-
-
-}
-
-const langguage = {
-
-}
-
-
-function transform(raw:string){
-  
-}
 
 const GRAMMAR = `
 <程序> -> <声明语句列表> <MAIN函数定义> <函数列表>
@@ -85,12 +38,11 @@ const GRAMMAR = `
 <语句表> -> <语句> <语句表'>
 <语句表'> -> <语句表> | None
 <IF语句> -> if ( <表达式> ) <IF语句'>
-<IF语句'> -> ; | <复合语句> <IF语句''>
+<IF语句'> -> <复合语句> <IF语句''>
 <IF语句''> -> else <复合语句> | None
-<循环语句> -> <FOR语句> | <WHILE语句> | <DO_WHILE语句>
+<循环语句> -> <FOR语句> | <WHILE语句>
 <FOR语句> -> for ( <表达式> ; <表达式> ; <表达式> ) <循环体语句>
 <WHILE语句> -> while ( <表达式> ) <循环体语句>
-<DO_WHILE语句> -> do <循环体语句> while ( <表达式> ) ;
 <循环体语句> -> <声明语句> | <循环执行语句> | <循环用复合语句> | ;
 <循环执行语句> -> <循环语句> | <循环用IF语句> | <RETURN语句> | <BREAK语句> | <CONTINUE语句> | <数据处理语句>
 <循环用复合语句> -> { <循环体语句表> }
@@ -122,4 +74,61 @@ const GRAMMAR = `
 <布尔因子> -> <表达式>
 <赋值表达式> -> = <表达式>
 `
+
+const obj = {
+
+}
+
+const test = {
+  '<一>': ["<二>", "<三>"],
+  "<二>": ["const", "let"],
+  "<三>": ["+<四>", "if(<五>"],
+  "<五>": ["i", "j"]
+}
+
+
+function getFirst(key, arr = []) {
+  const arrs = test[key]
+  for (const i of arrs) {
+    const match = i.match(/(<[\u4e00-\u9fa5]+>)/)
+    if (match) {
+      if (match['index'] === 0) {
+        getFirst(match[0], arr)
+      } else {
+        const prefix = i.slice(0, match['index'])
+        if (["if(", "while(", "for("].includes(prefix)) {
+          arr.push(prefix.slice(0, prefix.length - 1))
+        }
+      }
+    }
+    else {
+      arr.push(i)
+    }
+  }
+  return arr
+}
+
+
+const r = getFirst('<一>')
+
+console.log(r);
+function getFollow() {
+
+}
+
+
+function transform(s) {
+  let arr = s.split('\n')
+  arr.shift()
+  arr.pop()
+  for (const item of arr) {
+    let temp = item.replaceAll(" ", '')
+    const v = temp.split("->")
+    obj[v[0]] = v[1].split("|")
+  }
+  obj["<布尔表达式'>"] = ["||<表达式>", 'None']
+  console.log(obj);
+}
+
+// transform(GRAMMAR)
 
