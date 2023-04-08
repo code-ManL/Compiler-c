@@ -76,13 +76,12 @@ const GRAMMAR = `
 `
 
 const obj = {
-
 }
 
 const test = {
   '<一>': ["<二>", "<三>"],
   "<二>": ["const", "let"],
-  "<三>": ["+<四>", "if(<五>"],
+  "<三>": ["+<四>", "main()<五>"],
   "<五>": ["i", "j"]
 }
 
@@ -92,12 +91,16 @@ function getFirst(key, arr = []) {
   for (const i of arrs) {
     const match = i.match(/(<[\u4e00-\u9fa5]+>)/)
     if (match) {
+      // 开头是非终结符
       if (match['index'] === 0) {
         getFirst(match[0], arr)
       } else {
+        // 如果开头是终结符
         const prefix = i.slice(0, match['index'])
-        if (["if(", "while(", "for("].includes(prefix)) {
-          arr.push(prefix.slice(0, prefix.length - 1))
+        if (["if(", "while(", "for(", "main()"].includes(prefix)) {
+          arr.push(prefix.slice(0, prefix.indexOf("(")))
+        } else {
+          arr.push(prefix.slice(0, match['index']))
         }
       }
     }
@@ -109,11 +112,48 @@ function getFirst(key, arr = []) {
 }
 
 
-const r = getFirst('<一>')
+const r = getFirst('<二>')
 
-console.log(r);
-function getFollow() {
 
+function hasNone(key) {
+
+}
+
+function getFollow(key, arr = []) {
+  for (const item of Object.keys(obj)) {
+    const lang = obj[item]
+    for (const langItem of lang) {
+      // 先判断候选中是否含有查找的非终结符
+      const index = langItem.indexOf(key)
+      if (index !== -1) {
+        // 如果非终结符在最后，把follow(key)加入
+        if (key.length + index === langItem.length) {
+          const keyTemp = langItem.slice(index)
+          // 防止死循环 E -> TE
+          if (key !== keyTemp) {
+            arr.push(...getFollow(keyTemp))
+          }
+        }
+        // 如果非终结符不在最后，但是后面还有一个或多个非终结符，并且能推出 None
+        else if (item[key.length + index] === '<') {
+          const nextVt = 'da'
+          // 如果后面这个非终结符推的出None
+          if (hasNone(nextVt)) {
+
+          }
+          // 如果后面这个非终结符推不出 None
+          else {
+            arr.push(...getFirst(nextVt))
+          }
+        }
+        // 如果后面跟着的是终结符
+        else {
+          arr.push()
+        }
+      }
+    }
+  }
+  return arr
 }
 
 
@@ -131,4 +171,6 @@ function transform(s) {
 }
 
 // transform(GRAMMAR)
+// getFollow()
 
+console.log('231231da123'.indexOf('da') + 'da'.length);
