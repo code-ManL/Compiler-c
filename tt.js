@@ -78,99 +78,144 @@ const GRAMMAR = `
 const obj = {
 }
 
-const test = {
-  '<一>': ["<二>", "<三>"],
-  "<二>": ["const", "let"],
-  "<三>": ["+<四>", "main()<五>"],
-  "<五>": ["i", "j"]
-}
+const globalMatch = /<.*>/
 
+function judgeNone(key) {
+  let arr = test[key]
+  for (const item of arr) {
+    const temp = item.split(" ")
+    if (temp[0] === 'None') {
+      return true
+    } else if (temp[0].match(globalMatch)) {
+      return judgeNone(temp[0])
+    }
+  }
+  return false
+}
 
 function getFirst(key, arr = []) {
   const arrs = test[key]
+  // 遍历每一个候选
   for (const i of arrs) {
-    const match = i.match(/(<[\u4e00-\u9fa5]+>)/)
-    if (match) {
-      // 开头是非终结符
-      if (match['index'] === 0) {
-        getFirst(match[0], arr)
-      } else {
-        // 如果开头是终结符
-        const prefix = i.slice(0, match['index'])
-        if (["if(", "while(", "for(", "main()"].includes(prefix)) {
-          arr.push(prefix.slice(0, prefix.indexOf("(")))
-        } else {
-          arr.push(prefix.slice(0, match['index']))
+    const splitBlock = i.split(" ")
+    // 分割每一个候选
+    for (let i = 0; i < splitBlock.length; i++) {
+      // 访问每一个候选
+      const prefix = splitBlock[i]
+      // 如果候选是 < 开头，则说明是非终结符
+      if (prefix.match(globalMatch)) {
+        // 拿到非终结符中的first
+        let temp = new Set(getFirst(prefix))
+        // 删除 None
+        const hasNone = temp.delete('None')
+        arr.push(...Array.from(temp))
+        // 如果没有 None 就 break 结束
+        if (!hasNone) {
+          break
         }
+      } else {
+        arr.push(prefix)
+        break
       }
     }
-    else {
-      arr.push(i)
-    }
   }
-  return arr
+  return Array.from(new Set(arr))
 }
 
 
-const r = getFirst('<二>')
-
-
-function hasNone(key) {
-
-}
 
 function getFollow(key, arr = []) {
-  for (const item of Object.keys(obj)) {
-    const lang = obj[item]
+  if (key === "<E>")
+    arr.push("#")
+  for (const item of Object.keys(test)) {
+    const lang = test[item]
     for (const langItem of lang) {
       // 先判断候选中是否含有查找的非终结符
-      const index = langItem.indexOf(key)
-      if (index !== -1) {
+      const splitBlock = langItem.split(" ")
+      // 如果候选中含有寻找的key
+      if (splitBlock.includes(key)) {
         // 如果非终结符在最后，把follow(key)加入
-        if (key.length + index === langItem.length) {
-          const keyTemp = langItem.slice(index)
-          // 防止死循环 E -> TE
-          if (key !== keyTemp) {
-            arr.push(...getFollow(keyTemp))
+        const keyIndex = splitBlock.findIndex(item => item === key)
+        let hasNone = true
+        // A -> aABa first(B)  A -> aAa A -> aA(不会走循环)
+        for (let i = keyIndex + 1; i < splitBlock.length; i++) {
+          if (splitBlock[i].match(globalMatch)) {
+            let temp = new Set(getFirst(splitBlock[i]))
+            // 删除 None
+            temp.delete('None')
+            arr.push(...Array.from(temp))
+          } else {
+            arr.push(splitBlock[i])
+            hasNone = false
+            break
+          }
+          if (!judgeNone(splitBlock[i])) {
+            hasNone = false
+            break
           }
         }
-        // 如果非终结符不在最后，但是后面还有一个或多个非终结符，并且能推出 None
-        else if (item[key.length + index] === '<') {
-          const nextVt = 'da'
-          // 如果后面这个非终结符推的出None
-          if (hasNone(nextVt)) {
-
+        // A -> aAB B -> None   A -> aA
+        if (hasNone) {
+          if (key !== item) {
+            // 拿到非终结符中的follow
+            const temp = new Set(getFollow(item))
+            arr.push(...Array.from(temp))
           }
-          // 如果后面这个非终结符推不出 None
-          else {
-            arr.push(...getFirst(nextVt))
-          }
-        }
-        // 如果后面跟着的是终结符
-        else {
-          arr.push()
         }
       }
     }
   }
-  return arr
+  return Array.from(new Set(arr))
 }
 
+
+var test = {
+  '<一>': ["<二> <三>", "<三>"],
+  "<二>": ["const <一> /", "let"],
+  "<三>": ["+ <四>", "main () <五>", "<六> <七>"],
+  "<五>": ["i", "j"],
+  "<六>": ["=", "None"],
+  "<七>": ["(", ")"],
+}
+
+test = {
+  "<E>": ["<T> <E'>"],
+  "<E'>": ["+ <T> <E'>", "None"],
+  "<T>": ["<F> <T'>"],
+  "<T'>": ["* <F> <T'>", "None"],
+  "<F>": ["( <E> )", "i"]
+}
+
+for (const key of Object.keys(test)) {
+  console.log(key, getFirst(key));
+}
+console.log('----------------------------------------------------------------');
+for (const key of Object.keys(test)) {
+  console.log(key, getFollow(key));
+}
+
+// const r = getFirst('<三>')
+// console.log(r);
+
+
+// const d = getFollow('<二>')
+// console.log(d);
 
 function transform(s) {
   let arr = s.split('\n')
   arr.shift()
   arr.pop()
   for (const item of arr) {
-    let temp = item.replaceAll(" ", '')
-    const v = temp.split("->")
-    obj[v[0]] = v[1].split("|")
+    const v = item.split("->")
+    const temp = v[1].split("|").map(t => t.trim())
+    obj[v[0]] = temp
   }
-  obj["<布尔表达式'>"] = ["||<表达式>", 'None']
+  obj["<布尔表达式'>"] = ["||<表达 式>", 'None']
   console.log(obj);
 }
 
 // transform(GRAMMAR)
-// getFollow()
 
-console.log('231231da123'.indexOf('da') + 'da'.length);
+
+
+
