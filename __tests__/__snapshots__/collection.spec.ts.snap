@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`first > frist 1`] = `
+[
+  "(",
+  "i",
+]
+`;
+
+exports[`first > frist 2`] = `
+[
+  "+",
+  "None",
+]
+`;
+
+exports[`first > frist 3`] = `
+[
+  "(",
+  "i",
+]
+`;
+
+exports[`first > frist 4`] = `
+[
+  "*",
+  "None",
+]
+`;
+
+exports[`first > frist 5`] = `
+[
+  "(",
+  "i",
+]
+`;
+
+exports[`follow > follow 1`] = `
+[
+  "#",
+  ")",
+]
+`;
+
+exports[`follow > follow 2`] = `
+[
+  "#",
+  ")",
+]
+`;
+
+exports[`follow > follow 3`] = `
+[
+  "+",
+  "#",
+  ")",
+]
+`;
+
+exports[`follow > follow 4`] = `
+[
+  "+",
+  "#",
+  ")",
+]
+`;
+
+exports[`follow > follow 5`] = `
+[
+  "*",
+  "+",
+  "#",
+  ")",
+]
+`;

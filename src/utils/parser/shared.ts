@@ -14,36 +14,13 @@ var tokens: Ttoken[] = [
 
 
 // 报错
-export function toThrowError(error: string) {
+function toThrowError(error: string) {
   console.log(error);
 }
 
 // 获取下一个token
-export function getNextToken() {
+function getNextToken() {
   return tokens.shift() || { value: 'end' }
-}
-
-
-
-export function getFirst() {
-
-
-
-}
-
-
-export function getFollow() {
-
-
-}
-
-const langguage = {
-
-}
-
-
-function transform(raw:string){
-  
 }
 
 const GRAMMAR = `
@@ -85,12 +62,11 @@ const GRAMMAR = `
 <语句表> -> <语句> <语句表'>
 <语句表'> -> <语句表> | None
 <IF语句> -> if ( <表达式> ) <IF语句'>
-<IF语句'> -> ; | <复合语句> <IF语句''>
+<IF语句'> -> <复合语句> <IF语句''>
 <IF语句''> -> else <复合语句> | None
-<循环语句> -> <FOR语句> | <WHILE语句> | <DO_WHILE语句>
+<循环语句> -> <FOR语句> | <WHILE语句>
 <FOR语句> -> for ( <表达式> ; <表达式> ; <表达式> ) <循环体语句>
 <WHILE语句> -> while ( <表达式> ) <循环体语句>
-<DO_WHILE语句> -> do <循环体语句> while ( <表达式> ) ;
 <循环体语句> -> <声明语句> | <循环执行语句> | <循环用复合语句> | ;
 <循环执行语句> -> <循环语句> | <循环用IF语句> | <RETURN语句> | <BREAK语句> | <CONTINUE语句> | <数据处理语句>
 <循环用复合语句> -> { <循环体语句表> }
@@ -122,4 +98,124 @@ const GRAMMAR = `
 <布尔因子> -> <表达式>
 <赋值表达式> -> = <表达式>
 `
+
+const target: {
+  [key: string]: string[]
+} = {
+  "<E>": ["<T> <E'>"],
+  "<E'>": ["+ <T> <E'>", "None"],
+  "<T>": ["<F> <T'>"],
+  "<T'>": ["* <F> <T'>", "None"],
+  "<F>": ["( <E> )", "i"]
+}
+
+const globalMatch = /<.*>/
+
+function judgeNone(key: string): boolean {
+  let arr = target[key as keyof typeof target]
+  for (const item of arr) {
+    const temp = item.split(" ")
+    if (temp[0] === 'None') {
+      return true
+    } else if (temp[0].match(globalMatch)) {
+      return judgeNone(temp[0])
+    }
+  }
+  return false
+}
+
+function getFirst(key: string, arr: string[] = []) {
+  const arrs = target[key as keyof typeof target]
+  // 遍历每一个候选
+  for (const i of arrs) {
+    const splitBlock = i.split(" ")
+    // 分割每一个候选
+    for (let i = 0; i < splitBlock.length; i++) {
+      // 访问每一个候选
+      const prefix = splitBlock[i]
+      // 如果候选是 < 开头，则说明是非终结符
+      if (prefix.match(globalMatch)) {
+        // 拿到非终结符中的first
+        let temp = new Set(getFirst(prefix))
+        // 删除 None
+        const hasNone = temp.delete('None')
+        arr.push(...Array.from(temp))
+        // 如果没有 None 就 break 结束
+        if (!hasNone) {
+          break
+        }
+      } else {
+        arr.push(prefix)
+        break
+      }
+    }
+  }
+  return Array.from(new Set(arr))
+}
+
+function getFollow(key: string, arr: string[] = []) {
+  if (key === "<E>")
+    arr.push("#")
+  for (const item of Object.keys(target)) {
+    const lang = target[item as keyof typeof target]
+    for (const langItem of lang) {
+      // 先判断候选中是否含有查找的非终结符
+      const splitBlock = langItem.split(" ")
+      // 如果候选中含有寻找的key
+      if (splitBlock.includes(key)) {
+        // 如果非终结符在最后，把follow(key)加入
+        const keyIndex = splitBlock.findIndex(item => item === key)
+        let hasNone = true
+        // A -> aABa first(B)  A -> aAa A -> aA(不会走循环)
+        for (let i = keyIndex + 1; i < splitBlock.length; i++) {
+          if (splitBlock[i].match(globalMatch)) {
+            let temp = new Set(getFirst(splitBlock[i]))
+            // 删除 None
+            temp.delete('None')
+            arr.push(...Array.from(temp))
+          } else {
+            arr.push(splitBlock[i])
+            hasNone = false
+            break
+          }
+          if (!judgeNone(splitBlock[i])) {
+            hasNone = false
+            break
+          }
+        }
+        // A -> aAB B -> None   A -> aA
+        if (hasNone) {
+          if (key !== item) {
+            // 拿到非终结符中的follow
+            const temp = new Set(getFollow(item))
+            arr.push(...Array.from(temp))
+          }
+        }
+      }
+    }
+  }
+  return Array.from(new Set(arr))
+}
+
+function transform(s: string) {
+  let arr = s.split('\n')
+  arr.shift()
+  arr.pop()
+  for (const item of arr) {
+    const v = item.split("->")
+    const temp = v[1].split("|").map(t => t.trim())
+    target[v[0]] = temp
+  }
+  target["<布尔表达式'>"] = ["||<表达 式>", 'None']
+}
+
+export {
+  transform,
+  judgeNone,
+  getFirst,
+  getFollow,
+  toThrowError,
+  getNextToken,
+  target,
+}
 
