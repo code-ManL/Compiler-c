@@ -1,4 +1,6 @@
 
+
+
 const GRAMMAR = `
 <程序> -> <声明语句列表> <MAIN函数定义> <函数列表>
 <MAIN函数定义> -> main ( ) <复合语句>
@@ -99,11 +101,13 @@ function judgeNone(key) {
   return false
 }
 
-function getFirst(key, arr = [], index = -1) {
-  if (!Array.isArray(key) && !test[key])
+function getFirst(key, arr = [], index = -1, target = obj) {
+  if (!Array.isArray(key) && !target[key]) {
+    console.log(key);
     return arr
+  }
   // const arrs = index === -1 ? test[key] : [test[key][index]]
-  const arrs = !Array.isArray(key) ? test[key] : [key]
+  const arrs = !Array.isArray(key) ? target[key] : [key]
   // 遍历每一个候选
   for (const splitBlock of arrs) {
     // 分割每一个候选
@@ -132,13 +136,13 @@ function getFirst(key, arr = [], index = -1) {
 
 
 
-function getFollow(key, arr = []) {
-  if (!Array.isArray(key) && !test[key])
+function getFollow(key, arr = [], target = obj) {
+  if (!Array.isArray(key) && !target[key])
     return arr
   if (key === "<E>")
     arr.push("#")
-  for (const item of Object.keys(test)) {
-    const lang = test[item]
+  for (const item of Object.keys(target)) {
+    const lang = target[item]
     for (const splitBlock of lang) {
       // 先判断候选中是否含有查找的非终结符
       // 如果候选中含有寻找的key
@@ -225,7 +229,6 @@ function transform(s) {
     obj[v[0].trim()] = temp.map(item => item.split(" "))
   }
   obj["<布尔表达式'>"] = ["||<表达 式>", 'None']
-  console.log(obj);
 }
 
 // transform(GRAMMAR)
@@ -233,22 +236,98 @@ function transform(s) {
 
 // console.log(getFirst(["+", "<T>", "<E'>"]));
 
-let tokens = [{
-  value: 'i'
-}, {
-  value: '+'
-}, {
-  value: "i"
-}, {
-  value: "*"
-}, {
-  value: "i"
-}]
+let tokens = [
+  {
+    "col": 7,
+    "row": 0,
+    "start": 0,
+    "state": 1,
+    "type": "Keyword",
+    "value": "function",
+  },
+  {
+    "col": 12,
+    "row": 0,
+    "start": 9,
+    "state": 2,
+    "type": "Identifier",
+    "value": "main",
+  },
+  {
+    "col": 13,
+    "row": 0,
+    "start": 13,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "(",
+  },
+  {
+    "col": 14,
+    "row": 0,
+    "start": 14,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ")",
+  },
+  {
+    "col": 15,
+    "row": 0,
+    "start": 15,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "{",
+  },
+  {
+    "col": 20,
+    "row": 0,
+    "start": 18,
+    "state": 1,
+    "type": "Keyword",
+    "value": "let",
+  },
+  {
+    "col": 22,
+    "row": 0,
+    "start": 22,
+    "state": 2,
+    "type": "Identifier",
+    "value": "a",
+  },
+  {
+    "col": 24,
+    "row": 0,
+    "start": 24,
+    "state": 6,
+    "type": "Operators",
+    "value": "=",
+  },
+  {
+    "col": 26,
+    "row": 0,
+    "start": 26,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "1",
+  },
+  {
+    "col": 27,
+    "row": 0,
+    "start": 27,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ";",
+  },
+  {
+    "col": 28,
+    "row": 0,
+    "start": 28,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "}",
+  },
+]
 
 
-function getCurrentToken() {
-  return tokens[0]
-}
 
 let token = tokens[0]
 
@@ -257,20 +336,21 @@ function getNextToken() {
   token = tokens[0]
 }
 
-// console.log(getFirst(["<T>", "<E'>"]));
-function parser(key = "<E>", dep = 2) {
-  // let token = getCurrentToken()
+
+
+// function main ( ) { let a = 1 }
+function parser(key = "<程序>", dep = 2, target = obj) {
   // 遍历某个 key 的所有候选式
-  if (test[key]) {
-    for (let i = 0; i < test[key].length; i++) {
+  if (target[key]) {
+    for (let i = 0; i < target[key].length; i++) {
       // 拿到其中一个候选式进行判断
-      const check = test[key][i]
+      const check = target[key][i]
       // 如果当前遍历的候选式包含当前的token
       if (getFirst(check).includes(token.value)) {
         // 遍历当前候选式的所有非终结符
         for (let j = 0; j < check.length; j++) {
           const vt = check[j]
-          // console.log(key, vt, check, token);
+          console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
             return
           } else if (vt === token.value) {
@@ -283,24 +363,66 @@ function parser(key = "<E>", dep = 2) {
         }
         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
         break
-      } else if (i === test[key].length - 1 && check.length === 1 && check[0] === 'None') {
-        if (getFollow(key).includes(token.value)) {
+      } else if (i === target[key].length - 1) {
+        console.log(key, check, token ? token.value : undefined);
+        if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
           console.log(new Array(dep).fill("-").join(''), 'None');
         } else {
-          // 不属于follow直接g
+          // 最后一个且不属于follow或者最后一个也不能匹配，直接g
           console.log('gg');
+          return
         }
       }
     }
+
   } else {
     return
   }
 }
 
+transform(GRAMMAR)
+// console.log(obj);
 parser()
 
-/**
- * i-f-t-e
- *       
- * 
- */
+// console.log(getFirst(['<声明语句列表>', '<MAIN函数定义>', '<函数列表>']));
+
+
+
+// console.log(getFirst(["<T>", "<E'>"]));
+// function parser(key = "<E>", dep = 2) {
+//   // 遍历某个 key 的所有候选式
+//   if (test[key]) {
+//     for (let i = 0; i < test[key].length; i++) {
+//       // 拿到其中一个候选式进行判断
+//       const check = test[key][i]
+//       // 如果当前遍历的候选式包含当前的token
+//       if (getFirst(check).includes(token.value)) {
+//         // 遍历当前候选式的所有非终结符
+//         for (let j = 0; j < check.length; j++) {
+//           const vt = check[j]
+//           // console.log(key, vt, check, token);
+//           if (!token) {
+//             return
+//           } else if (vt === token.value) {
+//             console.log(new Array(dep).fill("-").join(''), token.value);
+//             getNextToken()
+//             // break
+//           } else {
+//             parser(vt, dep + 1)
+//           }
+//         }
+//         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
+//         break
+//       } else if (i === test[key].length - 1 && check.length === 1 && check[0] === 'None') {
+//         if (getFollow(key).includes(token.value)) {
+//           console.log(new Array(dep).fill("-").join(''), 'None');
+//         } else {
+//           // 不属于follow直接g
+//           console.log('gg');
+//         }
+//       }
+//     }
+//   } else {
+//     return
+//   }
+// }

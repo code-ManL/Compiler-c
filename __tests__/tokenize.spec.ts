@@ -89,6 +89,14 @@ describe('parser', async () => {
           "start": 27,
           "state": 4,
           "type": "Punctuator",
+          "value": ";",
+        },
+        {
+          "col": 28,
+          "row": 0,
+          "start": 28,
+          "state": 4,
+          "type": "Punctuator",
           "value": "}",
         },
       ]

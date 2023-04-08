@@ -3,7 +3,6 @@ import { getPre, getNextToken, toThrowError, getFirst, getCurrentToken, addPre }
 import { programEntry } from '../parser/program/index'
 import { declareSentenceTable } from './sentence'
 
-// function main ( ) { let a = 1 }
 
 
 // <程序> -> <声明语句列表> <MAIN函数定义> <函数列表>
@@ -54,7 +53,7 @@ export function parser() {
 
 
 
-  
+
   
   
   
