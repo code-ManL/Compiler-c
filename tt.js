@@ -75,6 +75,13 @@ const GRAMMAR = `
 <赋值表达式> -> = <表达式>
 `
 
+
+function main() {
+  let b = 2
+}
+
+
+
 const obj = {
 }
 
@@ -82,8 +89,7 @@ const globalMatch = /<.*>/
 
 function judgeNone(key) {
   let arr = test[key]
-  for (const item of arr) {
-    const temp = item.split(" ")
+  for (const temp of arr) {
     if (temp[0] === 'None') {
       return true
     } else if (temp[0].match(globalMatch)) {
@@ -93,11 +99,13 @@ function judgeNone(key) {
   return false
 }
 
-function getFirst(key, arr = []) {
-  const arrs = test[key]
+function getFirst(key, arr = [], index = -1) {
+  if (!Array.isArray(key) && !test[key])
+    return arr
+  // const arrs = index === -1 ? test[key] : [test[key][index]]
+  const arrs = !Array.isArray(key) ? test[key] : [key]
   // 遍历每一个候选
-  for (const i of arrs) {
-    const splitBlock = i.split(" ")
+  for (const splitBlock of arrs) {
     // 分割每一个候选
     for (let i = 0; i < splitBlock.length; i++) {
       // 访问每一个候选
@@ -125,13 +133,14 @@ function getFirst(key, arr = []) {
 
 
 function getFollow(key, arr = []) {
+  if (!Array.isArray(key) && !test[key])
+    return arr
   if (key === "<E>")
     arr.push("#")
   for (const item of Object.keys(test)) {
     const lang = test[item]
-    for (const langItem of lang) {
+    for (const splitBlock of lang) {
       // 先判断候选中是否含有查找的非终结符
-      const splitBlock = langItem.split(" ")
       // 如果候选中含有寻找的key
       if (splitBlock.includes(key)) {
         // 如果非终结符在最后，把follow(key)加入
@@ -178,21 +187,26 @@ var test = {
   "<七>": ["(", ")"],
 }
 
+
+
+// i + i * i
 test = {
-  "<E>": ["<T> <E'>"],
-  "<E'>": ["+ <T> <E'>", "None"],
-  "<T>": ["<F> <T'>"],
-  "<T'>": ["* <F> <T'>", "None"],
-  "<F>": ["( <E> )", "i"]
+  "<E>": [["<T>", "<E'>"]],
+  "<E'>": [["+", "<T>", "<E'>"], ["None"]],
+  "<T>": [["<F>", "<T'>"]],
+  "<T'>": [["*", "<F>", "<T'>"], ["None"]],
+  "<F>": [["(", "<E>", ")"], ["i"]]
 }
 
-for (const key of Object.keys(test)) {
-  console.log(key, getFirst(key));
-}
-console.log('----------------------------------------------------------------');
-for (const key of Object.keys(test)) {
-  console.log(key, getFollow(key));
-}
+
+// for (const key of Object.keys(test)) {
+//   console.log(key, getFirst(key));
+// }
+// console.log('----------------------------------------------------------------');
+// for (const key of Object.keys(test)) {
+//   console.log(key, getFollow(key));
+// }
+
 
 // const r = getFirst('<三>')
 // console.log(r);
@@ -208,14 +222,85 @@ function transform(s) {
   for (const item of arr) {
     const v = item.split("->")
     const temp = v[1].split("|").map(t => t.trim())
-    obj[v[0]] = temp
+    obj[v[0].trim()] = temp.map(item => item.split(" "))
   }
   obj["<布尔表达式'>"] = ["||<表达 式>", 'None']
   console.log(obj);
 }
 
 // transform(GRAMMAR)
+// console.log(obj);
+
+// console.log(getFirst(["+", "<T>", "<E'>"]));
+
+let tokens = [{
+  value: 'i'
+}, {
+  value: '+'
+}, {
+  value: "i"
+}, {
+  value: "*"
+}, {
+  value: "i"
+}]
 
 
+function getCurrentToken() {
+  return tokens[0]
+}
 
+let token = tokens[0]
 
+function getNextToken() {
+  tokens.shift()
+  token = tokens[0]
+}
+
+// console.log(getFirst(["<T>", "<E'>"]));
+function parser(key = "<E>", dep = 2) {
+  // let token = getCurrentToken()
+  // 遍历某个 key 的所有候选式
+  if (test[key]) {
+    for (let i = 0; i < test[key].length; i++) {
+      // 拿到其中一个候选式进行判断
+      const check = test[key][i]
+      // 如果当前遍历的候选式包含当前的token
+      if (getFirst(check).includes(token.value)) {
+        // 遍历当前候选式的所有非终结符
+        for (let j = 0; j < check.length; j++) {
+          const vt = check[j]
+          // console.log(key, vt, check, token);
+          if (!token) {
+            return
+          } else if (vt === token.value) {
+            console.log(new Array(dep).fill("-").join(''), token.value);
+            getNextToken()
+            // break
+          } else {
+            parser(vt, dep + 1)
+          }
+        }
+        // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
+        break
+      } else if (i === test[key].length - 1 && check.length === 1 && check[0] === 'None') {
+        if (getFollow(key).includes(token.value)) {
+          console.log(new Array(dep).fill("-").join(''), 'None');
+        } else {
+          // 不属于follow直接g
+          console.log('gg');
+        }
+      }
+    }
+  } else {
+    return
+  }
+}
+
+parser()
+
+/**
+ * i-f-t-e
+ *       
+ * 
+ */

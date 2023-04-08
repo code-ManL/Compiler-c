@@ -1,8 +1,8 @@
 export * from './declareSentence'
 export * from './executeSentence'
 import { getNextToken, toThrowError } from '../shared'
-import { declareSentence_first, declareSentence_follow, declareSentence } from './declareSentence'
-import { executeSentence, executeSentence_first, executeSentence_follow } from './executeSentence'
+import {  declareSentence } from './declareSentence'
+import { executeSentence,  } from './executeSentence'
 
 
 /**
@@ -11,14 +11,7 @@ import { executeSentence, executeSentence_first, executeSentence_follow } from '
  * 
  */
 export function sentences() {
-  let token = getNextToken()
-  if (declareSentence_first.includes(token.value)) {
-    declareSentence()
-  } else if(executeSentence_first.includes(token.value)){
-    executeSentence()
-  }else {
-    toThrowError('not sentences')
-  }
+  
 }
 
 

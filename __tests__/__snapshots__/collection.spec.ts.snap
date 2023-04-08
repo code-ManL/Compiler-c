@@ -37,14 +37,12 @@ exports[`first > frist 5`] = `
 
 exports[`follow > follow 1`] = `
 [
-  "#",
   ")",
 ]
 `;
 
 exports[`follow > follow 2`] = `
 [
-  "#",
   ")",
 ]
 `;
@@ -52,7 +50,6 @@ exports[`follow > follow 2`] = `
 exports[`follow > follow 3`] = `
 [
   "+",
-  "#",
   ")",
 ]
 `;
@@ -60,7 +57,6 @@ exports[`follow > follow 3`] = `
 exports[`follow > follow 4`] = `
 [
   "+",
-  "#",
   ")",
 ]
 `;
@@ -69,7 +65,6 @@ exports[`follow > follow 5`] = `
 [
   "*",
   "+",
-  "#",
   ")",
 ]
 `;

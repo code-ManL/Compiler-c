@@ -1,17 +1,103 @@
 import type { Ttoken } from '../tokensize/types'
 
 // mock tokens
-var tokens: Ttoken[] = [
-  {
-    type: '',
-    state: 1,
-    value: '',
-    col: 1,
-    row: 2,
-    start: 1,
-  }
-]
+var tokens: Ttoken[] =
+  [
+    {
+      "col": 7,
+      "row": 0,
+      "start": 0,
+      "state": 1,
+      "type": "Keyword",
+      "value": "function",
+    },
+    {
+      "col": 12,
+      "row": 0,
+      "start": 9,
+      "state": 2,
+      "type": "Identifier",
+      "value": "main",
+    },
+    {
+      "col": 13,
+      "row": 0,
+      "start": 13,
+      "state": 4,
+      "type": "Punctuator",
+      "value": "(",
+    },
+    {
+      "col": 14,
+      "row": 0,
+      "start": 14,
+      "state": 4,
+      "type": "Punctuator",
+      "value": ")",
+    },
+    {
+      "col": 15,
+      "row": 0,
+      "start": 15,
+      "state": 4,
+      "type": "Punctuator",
+      "value": "{",
+    },
+    {
+      "col": 20,
+      "row": 0,
+      "start": 18,
+      "state": 1,
+      "type": "Keyword",
+      "value": "let",
+    },
+    {
+      "col": 22,
+      "row": 0,
+      "start": 22,
+      "state": 2,
+      "type": "Identifier",
+      "value": "a",
+    },
+    {
+      "col": 24,
+      "row": 0,
+      "start": 24,
+      "state": 6,
+      "type": "Operators",
+      "value": "=",
+    },
+    {
+      "col": 26,
+      "row": 0,
+      "start": 26,
+      "state": 4,
+      "type": "Punctuator",
+      "value": "1",
+    },
+    {
+      "col": 27,
+      "row": 0,
+      "start": 27,
+      "state": 4,
+      "type": "Punctuator",
+      "value": "}",
+    },
+  ]
 
+let pre = 1
+
+function getPre() {
+  return new Array(pre).fill('-').join('')
+}
+
+function addPre() {
+  pre++
+}
+
+function deletePre() {
+  pre--
+}
 
 // 报错
 function toThrowError(error: string) {
@@ -20,7 +106,14 @@ function toThrowError(error: string) {
 
 // 获取下一个token
 function getNextToken() {
-  return tokens.shift() || { value: 'end' }
+  if (tokens.length > 0)
+    return tokens.shift()
+  else
+    return console.log('end');
+}
+
+function getCurrentToken() {
+  return tokens[0]
 }
 
 const GRAMMAR = `
@@ -124,8 +217,9 @@ function judgeNone(key: string): boolean {
   return false
 }
 
-function getFirst(key: string, arr: string[] = []) {
-  const arrs = target[key as keyof typeof target]
+function getFirst(key: string, arr: string[] = [], index: number = -1) {
+  // 获取全部候选式first集合 ： 获取指定候选式first集合
+  const arrs = index === -1 ? target[key as keyof typeof target] : [target[key as keyof typeof target][index]]
   // 遍历每一个候选
   for (const i of arrs) {
     const splitBlock = i.split(" ")
@@ -154,7 +248,7 @@ function getFirst(key: string, arr: string[] = []) {
 }
 
 function getFollow(key: string, arr: string[] = []) {
-  if (key === "<E>")
+  if (key === "<程序>")
     arr.push("#")
   for (const item of Object.keys(target)) {
     const lang = target[item as keyof typeof target]
@@ -216,6 +310,11 @@ export {
   getFollow,
   toThrowError,
   getNextToken,
+  getCurrentToken,
   target,
+  getPre,
+  addPre,
+  deletePre,
+  pre
 }
 
