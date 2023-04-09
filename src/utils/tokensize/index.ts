@@ -198,7 +198,7 @@ export function tokenize(s: string) {
         col++
         break
       case State.NUMBER:
-        console.log(c,'c');
+        console.log(c, 'c');
         if (isDigit(c) || c === '.') {
           col++
           if (
@@ -233,7 +233,7 @@ export function tokenize(s: string) {
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
-        } else if(isSpace(c)){
+        } else if (isSpace(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.INITIAL
         }
@@ -263,6 +263,9 @@ export function tokenize(s: string) {
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
+        } else if (isSpace(c)) {
+          handlePush(chars, token, TokenState.NUMBER, col, row)
+          currentState = State.INITIAL
         }
         break
       case State.HEX:
@@ -284,6 +287,9 @@ export function tokenize(s: string) {
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
+        } else if (isSpace(c)) {
+          handlePush(chars, token, TokenState.NUMBER, col, row)
+          currentState = State.INITIAL
         }
         break
       case State.E_OPEN:
@@ -380,6 +386,11 @@ export function tokenize(s: string) {
         break
     }
   }
+  if (chars.length !== 0) {
+    if (chars[0] === '/' && chars[1] === '*')
+      handlePush(chars, token, TokenState.ERROR, col, row)
+  }
+
   return token
 }
 

@@ -1,3 +1,1 @@
-function main() {
-  var sum = 1,2[3 = [1, 2, 3]
-}
+var e = 0x12e+33 
