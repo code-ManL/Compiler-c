@@ -104,7 +104,6 @@ export function tokenize(s: string) {
   let currentState = State.INITIAL
   col = -1;
   row = 0
-
   while (s) {
     let c = s[0]
     switch (currentState) {
@@ -229,7 +228,7 @@ export function tokenize(s: string) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.OPERATORS
         } else if (isPunctuator(c)) {
-          handlePush(chars, token, TokenState.PUNCTUATOR, col, row)
+          handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
         }
         break

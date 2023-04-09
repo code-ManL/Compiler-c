@@ -1,9 +1,11 @@
 
 
-
+// 标识符元 -》标识符列表
+// 标识符列表' =》 标识符列表
+// 标识符列表 =》 标识符列表'
 const GRAMMAR = `
 <程序> -> <声明语句列表> <MAIN函数定义> <函数列表>
-<MAIN函数定义> -> main ( ) <复合语句>
+<MAIN函数定义> -> function main ( ) <复合语句>
 <函数列表> -> <函数定义> <函数列表> | None
 <数据类型> -> const | var | let
 <数据声明> -> <数据类型> <标识符列表>
@@ -24,8 +26,8 @@ const GRAMMAR = `
 <函数声明形参列表'> -> , <声明形参元> | None
 <声明形参元> -> <数据类型>
 <函数定义声明> -> function <标识符> ( <函数形参列表> )
-<声明语句> -> function <标识符> ( <函数声明形参列表> ) ; | <数据类型> <标识符> <声明语句'> ;
-<声明语句'> -> <标识符元'> <声明语句''> | ( <函数声明形参列表> ) | None
+<声明语句> -> <数据类型> <标识符> <声明语句'> ;
+<声明语句'> -> <标识符元'> <声明语句''> | None
 <声明语句''> -> , <标识符列表> | None
 <声明语句列表> -> <声明语句> <声明语句列表> | None
 <函数定义> -> <函数定义声明> <复合语句>
@@ -57,17 +59,21 @@ const GRAMMAR = `
 <BREAK语句> -> break ;
 <CONTINUE语句> -> continue ;
 <表达式语句> -> <表达式> ;
-<表达式> -> <算术表达式> <表达式'>
+<表达式> -> <算术表达式> <表达式'> | <函数表达式>
 <表达式'> -> <关系表达式> <表达式''> | <赋值表达式> | <布尔表达式> | None
 <表达式''> -> <布尔表达式> | None
+<函数表达式> -> function <函数表达式'> | ( ) => <复合语句> 
+<函数表达式'> -> ( <函数形参列表> ) <复合语句> | <标识符> ( <函数形参列表> ) <复合语句> 
 <算术表达式> -> <项> <算术表达式'>
 <算术表达式'> -> + <算术表达式> | - <算术表达式> | None
 <项> -> <因子> <项'>
 <项'> -> * <项> | / <项> | % <项> | None
 <因子> -> + <因子> | - <因子> | ( <表达式> ) | <常量> | <标识符> <因子'> | ! <因子>
 <因子'> -> ( <函数实参列表> ) | None
-<常量> -> <数值型常量> | <字符> | <字符串>
-<数值型常量> -> <整数> | <实数>
+<常量> -> <整数> | <字符串>
+<整数> -> Number
+<字符串>  -> String
+<标识符> -> Identifier
 <关系表达式> -> <关系运算符> <算术表达式>
 <关系运算符> -> < | <= | > | >= | == | !=
 <布尔表达式> -> <布尔项> <布尔表达式'>
@@ -90,7 +96,7 @@ const obj = {
 const globalMatch = /<.*>/
 
 function judgeNone(key) {
-  let arr = test[key]
+  let arr = obj[key]
   for (const temp of arr) {
     if (temp[0] === 'None') {
       return true
@@ -101,13 +107,15 @@ function judgeNone(key) {
   return false
 }
 
+
+let first_stack = []
 function getFirst(key, arr = [], index = -1, target = obj) {
-  if (!Array.isArray(key) && !target[key]) {
-    console.log(key);
+  // console.log('first', key);
+  if (!Array.isArray(key) && !target[key] || hasStack(follow_stack, key)) {
     return arr
   }
   // const arrs = index === -1 ? test[key] : [test[key][index]]
-  const arrs = !Array.isArray(key) ? target[key] : [key]
+  const arrs = !Array.isArray(key) ? (first_stack.push(key), target[key]) : [key]
   // 遍历每一个候选
   for (const splitBlock of arrs) {
     // 分割每一个候选
@@ -131,16 +139,24 @@ function getFirst(key, arr = [], index = -1, target = obj) {
       }
     }
   }
+  !Array.isArray(key) && first_stack.pop()
   return Array.from(new Set(arr))
 }
 
 
 
+function hasStack(stack, key) {
+  return !!stack.includes(key)
+}
+
+let follow_stack = []
 function getFollow(key, arr = [], target = obj) {
-  if (!Array.isArray(key) && !target[key])
+  if ((!Array.isArray(key) && !target[key]) || hasStack(follow_stack, key)) {
     return arr
+  }
   if (key === "<E>")
     arr.push("#")
+  follow_stack.push(key)
   for (const item of Object.keys(target)) {
     const lang = target[item]
     for (const splitBlock of lang) {
@@ -178,30 +194,9 @@ function getFollow(key, arr = [], target = obj) {
       }
     }
   }
+  follow_stack.pop()
   return Array.from(new Set(arr))
 }
-
-
-var test = {
-  '<一>': ["<二> <三>", "<三>"],
-  "<二>": ["const <一> /", "let"],
-  "<三>": ["+ <四>", "main () <五>", "<六> <七>"],
-  "<五>": ["i", "j"],
-  "<六>": ["=", "None"],
-  "<七>": ["(", ")"],
-}
-
-
-
-// i + i * i
-test = {
-  "<E>": [["<T>", "<E'>"]],
-  "<E'>": [["+", "<T>", "<E'>"], ["None"]],
-  "<T>": [["<F>", "<T'>"]],
-  "<T'>": [["*", "<F>", "<T'>"], ["None"]],
-  "<F>": [["(", "<E>", ")"], ["i"]]
-}
-
 
 // for (const key of Object.keys(test)) {
 //   console.log(key, getFirst(key));
@@ -306,7 +301,7 @@ let tokens = [
     "row": 0,
     "start": 26,
     "state": 4,
-    "type": "Punctuator",
+    "type": "Number",
     "value": "1",
   },
   {
@@ -327,6 +322,23 @@ let tokens = [
   },
 ]
 
+// tokens = [
+//   {
+//     value: "i"
+//   },
+//   {
+//     value: "+"
+//   },
+//   {
+//     value: "i"
+//   },
+//   {
+//     value: "*"
+//   },
+//   {
+//     value: "i"
+//   }
+// ]
 
 
 let token = tokens[0]
@@ -337,24 +349,38 @@ function getNextToken() {
 }
 
 
+// i + i * i
+// test = {
+//   "<E>": [["<T>", "<E'>"]],
+//   "<E'>": [["+", "<T>", "<E'>"], ["None"]],
+//   "<T>": [["<F>", "<T'>"]],
+//   "<T'>": [["*", "<F>", "<T'>"], ["None"]],
+//   "<F>": [["(", "<E>", ")"], ["i"]]
+// }
 
+// if ( a == 1 ) { } 
 // function main ( ) { let a = 1 }
 function parser(key = "<程序>", dep = 2, target = obj) {
-  // 遍历某个 key 的所有候选式
+  // 遍历某个 key 的所有候选式 
+
   if (target[key]) {
+    // console.log(target[key]);
     for (let i = 0; i < target[key].length; i++) {
       // 拿到其中一个候选式进行判断
       const check = target[key][i]
       // 如果当前遍历的候选式包含当前的token
-      if (getFirst(check).includes(token.value)) {
+      const first = getFirst(check)
+      // console.log(key, first);
+      if (first.includes(token.value) || first.includes(token.type)) {
         // 遍历当前候选式的所有非终结符
         for (let j = 0; j < check.length; j++) {
           const vt = check[j]
-          console.log(key, vt, check, token ? token.value : undefined);
+          // console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
             return
-          } else if (vt === token.value) {
+          } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
             console.log(new Array(dep).fill("-").join(''), token.value);
+            flag = false
             getNextToken()
             // break
           } else {
@@ -364,17 +390,18 @@ function parser(key = "<程序>", dep = 2, target = obj) {
         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
         break
       } else if (i === target[key].length - 1) {
-        console.log(key, check, token ? token.value : undefined);
+        // console.log(key, getFollow(key));
+        // console.log(key, check, token ? token.value : undefined);
         if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
           console.log(new Array(dep).fill("-").join(''), 'None');
-        } else {
+        }
+        else {
           // 最后一个且不属于follow或者最后一个也不能匹配，直接g
           console.log('gg');
           return
         }
       }
     }
-
   } else {
     return
   }
@@ -384,6 +411,46 @@ transform(GRAMMAR)
 // console.log(obj);
 parser()
 
+
+
+// console.log(getFollow("<算术表达式'>"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// console.log(getFirst(["<函数表达式>"]));
 // console.log(getFirst(['<声明语句列表>', '<MAIN函数定义>', '<函数列表>']));
 
 

@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { resolve } from 'node:path';
 import { tokenize } from '../src/utils/tokensize'
 
-describe('parser', async () => {
+describe.only('parser', async () => {
 
   const id = resolve(__dirname, './fixtures/source.js')
   const code = await fs.promises.readFile(id, 'utf-8')
@@ -79,8 +79,8 @@ describe('parser', async () => {
           "col": 26,
           "row": 0,
           "start": 26,
-          "state": 4,
-          "type": "Punctuator",
+          "state": 3,
+          "type": "Number",
           "value": "1",
         },
         {
@@ -95,6 +95,86 @@ describe('parser', async () => {
           "col": 28,
           "row": 0,
           "start": 28,
+          "state": 4,
+          "type": "Punctuator",
+          "value": "}",
+        },
+        {
+          "col": 36,
+          "row": 0,
+          "start": 29,
+          "state": 1,
+          "type": "Keyword",
+          "value": "function",
+        },
+        {
+          "col": 41,
+          "row": 0,
+          "start": 38,
+          "state": 2,
+          "type": "Identifier",
+          "value": "main",
+        },
+        {
+          "col": 42,
+          "row": 0,
+          "start": 42,
+          "state": 4,
+          "type": "Punctuator",
+          "value": "(",
+        },
+        {
+          "col": 43,
+          "row": 0,
+          "start": 43,
+          "state": 4,
+          "type": "Punctuator",
+          "value": ")",
+        },
+        {
+          "col": 44,
+          "row": 0,
+          "start": 44,
+          "state": 4,
+          "type": "Punctuator",
+          "value": "{",
+        },
+        {
+          "col": 49,
+          "row": 0,
+          "start": 47,
+          "state": 1,
+          "type": "Keyword",
+          "value": "let",
+        },
+        {
+          "col": 51,
+          "row": 0,
+          "start": 51,
+          "state": 2,
+          "type": "Identifier",
+          "value": "a",
+        },
+        {
+          "col": 53,
+          "row": 0,
+          "start": 53,
+          "state": 6,
+          "type": "Operators",
+          "value": "=",
+        },
+        {
+          "col": 55,
+          "row": 0,
+          "start": 55,
+          "state": 3,
+          "type": "Number",
+          "value": "1",
+        },
+        {
+          "col": 56,
+          "row": 0,
+          "start": 56,
           "state": 4,
           "type": "Punctuator",
           "value": "}",
