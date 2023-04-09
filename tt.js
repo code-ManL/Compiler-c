@@ -2,6 +2,8 @@
 
 // 标识符元 -》标识符列表
 // 标识符列表' =》 标识符列表
+const http = require('http');
+
 // 标识符列表 =》 标识符列表'
 const GRAMMAR = `
 <程序> -> <声明语句列表> <MAIN函数定义> <函数列表>
@@ -95,8 +97,8 @@ const obj = {
 
 const globalMatch = /<.*>/
 
-function judgeNone(key) {
-  let arr = obj[key]
+function judgeNone(key, target = test) {
+  let arr = target[key]
   for (const temp of arr) {
     if (temp[0] === 'None') {
       return true
@@ -109,7 +111,7 @@ function judgeNone(key) {
 
 
 let first_stack = []
-function getFirst(key, arr = [], index = -1, target = obj) {
+function getFirst(key, arr = [], index = -1, target = test) {
   // console.log('first', key);
   if (!Array.isArray(key) && !target[key] || hasStack(follow_stack, key)) {
     return arr
@@ -150,7 +152,7 @@ function hasStack(stack, key) {
 }
 
 let follow_stack = []
-function getFollow(key, arr = [], target = obj) {
+function getFollow(key, arr = [], target = test) {
   if ((!Array.isArray(key) && !target[key]) || hasStack(follow_stack, key)) {
     return arr
   }
@@ -198,13 +200,6 @@ function getFollow(key, arr = [], target = obj) {
   return Array.from(new Set(arr))
 }
 
-// for (const key of Object.keys(test)) {
-//   console.log(key, getFirst(key));
-// }
-// console.log('----------------------------------------------------------------');
-// for (const key of Object.keys(test)) {
-//   console.log(key, getFollow(key));
-// }
 
 
 // const r = getFirst('<三>')
@@ -322,23 +317,28 @@ let tokens = [
   },
 ]
 
-// tokens = [
-//   {
-//     value: "i"
-//   },
-//   {
-//     value: "+"
-//   },
-//   {
-//     value: "i"
-//   },
-//   {
-//     value: "*"
-//   },
-//   {
-//     value: "i"
-//   }
-// ]
+tokens = [
+  {
+    value: "i",
+    type: 'da'
+  },
+  {
+    value: "+",
+    type: 'da'
+  },
+  {
+    value: "i",
+    type: 'da'
+  },
+  {
+    value: "*",
+    type: 'da'
+  },
+  {
+    value: "i",
+    type: 'da'
+  }
+]
 
 
 let token = tokens[0]
@@ -350,19 +350,22 @@ function getNextToken() {
 
 
 // i + i * i
-// test = {
-//   "<E>": [["<T>", "<E'>"]],
-//   "<E'>": [["+", "<T>", "<E'>"], ["None"]],
-//   "<T>": [["<F>", "<T'>"]],
-//   "<T'>": [["*", "<F>", "<T'>"], ["None"]],
-//   "<F>": [["(", "<E>", ")"], ["i"]]
-// }
+var test = {
+  "<E>": [["<T>", "<E'>"]],
+  "<E'>": [["+", "<T>", "<E'>"], ["None"]],
+  "<T>": [["<F>", "<T'>"]],
+  "<T'>": [["*", "<F>", "<T'>"], ["None"]],
+  "<F>": [["(", "<E>", ")"], ["i"]]
+}
 
 // if ( a == 1 ) { } 
 // function main ( ) { let a = 1 }
-function parser(key = "<程序>", dep = 2, target = obj) {
-  // 遍历某个 key 的所有候选式 
 
+var ast2 = {
+
+}
+function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
+  // 遍历某个 key 的所有候选式 
   if (target[key]) {
     // console.log(target[key]);
     for (let i = 0; i < target[key].length; i++) {
@@ -371,20 +374,25 @@ function parser(key = "<程序>", dep = 2, target = obj) {
       // 如果当前遍历的候选式包含当前的token
       const first = getFirst(check)
       // console.log(key, first);
-      if (first.includes(token.value) || first.includes(token.type)) {
+      if (token && (first.includes(token.value) || first.includes(token.type))) {
+        // 在这里创建，因为外面创建，token.value 不一定属于 check 的 first 集合
+        ast[key] = {}
+        ast[key].children = []
         // 遍历当前候选式的所有非终结符
         for (let j = 0; j < check.length; j++) {
           const vt = check[j]
-          // console.log(key, vt, check, token ? token.value : undefined);
+          const vtOBj = { [vt]: {} }
+          ast[key].children.push(vtOBj)
+          console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
+            vtOBj[vt].children = { 'None': {} }
             return
           } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
             console.log(new Array(dep).fill("-").join(''), token.value);
-            flag = false
             getNextToken()
             // break
           } else {
-            parser(vt, dep + 1)
+            parser(vt, dep + 1, vtOBj)
           }
         }
         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
@@ -393,9 +401,12 @@ function parser(key = "<程序>", dep = 2, target = obj) {
         // console.log(key, getFollow(key));
         // console.log(key, check, token ? token.value : undefined);
         if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
+          ast[key] = {}
+          ast[key].children = []
+          const vtOBj = { 'None': {} }
+          ast[key].children.push(vtOBj)
           console.log(new Array(dep).fill("-").join(''), 'None');
-        }
-        else {
+        } else {
           // 最后一个且不属于follow或者最后一个也不能匹配，直接g
           console.log('gg');
           return
@@ -407,25 +418,21 @@ function parser(key = "<程序>", dep = 2, target = obj) {
   }
 }
 
-transform(GRAMMAR)
-// console.log(obj);
-parser()
+// transform(GRAMMAR)
+// parser()
+console.dir(ast2);
 
 
 
-// console.log(getFollow("<算术表达式'>"));
+const server = http.createServer((req, res) => {
+  transform(GRAMMAR)
+  parser()
+  res.end(JSON.stringify(ast2));
+})
 
-
-
-
-
-
-
-
-
-
-
-
+server.listen(1188, function () {
+  console.log(`the server is started at port ${1188}`)
+})
 
 
 
@@ -438,6 +445,34 @@ parser()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// for (const key of Object.keys(test)) {
+//   console.log(key, getFirst(key));
+// }
+// console.log('----------------------------------------------------------------');
+// for (const key of Object.keys(test)) {
+//   console.log(key, getFollow(key));
+// }
 
 
 
