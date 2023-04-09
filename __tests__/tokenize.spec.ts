@@ -25,7 +25,7 @@ describe.only('parser', async () => {
           "start": 4,
           "state": 2,
           "type": "Identifier",
-          "value": "e",
+          "value": "b",
         },
         {
           "col": 6,
@@ -36,12 +36,12 @@ describe.only('parser', async () => {
           "value": "=",
         },
         {
-          "col": 9,
+          "col": 8,
           "row": 0,
-          "start": 4,
-          "state": 3,
-          "type": "Number",
-          "value": "12e+33",
+          "start": 5,
+          "state": 9,
+          "type": "Error",
+          "value": "0x3g",
         },
       ]
     `)

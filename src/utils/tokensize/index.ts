@@ -278,9 +278,16 @@ export function tokenize(s: string) {
         }
         break
       case State.HEX:
-        if (isHex(c)) {
-          chars.push(c)
-          s = s.slice(1)
+        console.log('31', c);
+        if (isAlpha(c)) {
+          if (isHex(c)) {
+            chars.push(c)
+            s = s.slice(1)
+          } else {
+            chars.push(c)
+            handlePush(chars, token, TokenState.ERROR, col, row)
+            return token
+          }
         } else if (isDigit(c)) {
           chars.push(c)
           s = s.slice(1)
