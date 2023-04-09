@@ -222,14 +222,23 @@ export function tokenize(s: string) {
             chars.push(c)
             s = s.slice(1)
             currentState = State.HEX
+          } else if (chars.length > 0 && isE(c) && !isE(chars[chars.length - 1])) {
+            chars.push(c)
+            s = s.slice(1)
           } else {
             chars.push(c)
             handlePush(chars, token, TokenState.ERROR, col, row)
             return token
           }
         } else if (isOperators(c)) {
-          handlePush(chars, token, TokenState.NUMBER, col, row)
-          currentState = State.OPERATORS
+          if (c === '+' || c === '-' && isE(chars[chars.length - 1])) {
+            chars.push(c)
+            s = s.slice(1)
+            currentState = State.E_OPEN
+          } else {
+            handlePush(chars, token, TokenState.NUMBER, col, row)
+            currentState = State.OPERATORS
+          }
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
@@ -299,6 +308,9 @@ export function tokenize(s: string) {
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
+        } else if (isSpace(c)) {
+          handlePush(chars, token, TokenState.NUMBER, col, row)
+          currentState = State.INITIAL
         } else {
           chars.push(c)
           handlePush(chars, token, TokenState.ERROR, col, row)
