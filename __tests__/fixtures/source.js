@@ -1,1 +1,2 @@
-var b = 0x3g
+var a = 0712
+var b = 0020

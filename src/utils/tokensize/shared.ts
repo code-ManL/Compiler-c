@@ -28,7 +28,7 @@ function isKeyword(c: string) {
 }
 
 function isOct(c: string) {
-  return c >= '0' && c <= '7'
+  return c > '0' && c <= '7'
 }
 
 function isE(c: string) {
