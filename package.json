@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "t": "vitest --watch --update --ui",
+    "t": "vitest --watch --update",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

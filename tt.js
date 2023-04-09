@@ -86,18 +86,13 @@ const GRAMMAR = `
 `
 
 
-function main() {
-  let b = 2
-}
-
-
 
 const obj = {
 }
 
 const globalMatch = /<.*>/
 
-function judgeNone(key, target = test) {
+function judgeNone(key, target = obj) {
   let arr = target[key]
   for (const temp of arr) {
     if (temp[0] === 'None') {
@@ -111,7 +106,7 @@ function judgeNone(key, target = test) {
 
 
 let first_stack = []
-function getFirst(key, arr = [], index = -1, target = test) {
+function getFirst(key, arr = [], index = -1, target = obj) {
   // console.log('first', key);
   if (!Array.isArray(key) && !target[key] || hasStack(follow_stack, key)) {
     return arr
@@ -152,7 +147,7 @@ function hasStack(stack, key) {
 }
 
 let follow_stack = []
-function getFollow(key, arr = [], target = test) {
+function getFollow(key, arr = [], target = obj) {
   if ((!Array.isArray(key) && !target[key]) || hasStack(follow_stack, key)) {
     return arr
   }
@@ -226,119 +221,159 @@ function transform(s) {
 
 // console.log(getFirst(["+", "<T>", "<E'>"]));
 
-let tokens = [
+let tokens =  [
   {
-    "col": 7,
+    "col": 2,
     "row": 0,
     "start": 0,
-    "state": 1,
-    "type": "Keyword",
-    "value": "function",
-  },
-  {
-    "col": 12,
-    "row": 0,
-    "start": 9,
-    "state": 2,
-    "type": "Identifier",
-    "value": "main",
-  },
-  {
-    "col": 13,
-    "row": 0,
-    "start": 13,
-    "state": 4,
-    "type": "Punctuator",
-    "value": "(",
-  },
-  {
-    "col": 14,
-    "row": 0,
-    "start": 14,
-    "state": 4,
-    "type": "Punctuator",
-    "value": ")",
-  },
-  {
-    "col": 15,
-    "row": 0,
-    "start": 15,
-    "state": 4,
-    "type": "Punctuator",
-    "value": "{",
-  },
-  {
-    "col": 20,
-    "row": 0,
-    "start": 18,
     "state": 1,
     "type": "Keyword",
     "value": "let",
   },
   {
-    "col": 22,
+    "col": 4,
     "row": 0,
-    "start": 22,
+    "start": 4,
     "state": 2,
     "type": "Identifier",
     "value": "a",
   },
   {
-    "col": 24,
+    "col": 6,
     "row": 0,
-    "start": 24,
+    "start": 6,
     "state": 6,
     "type": "Operators",
     "value": "=",
   },
   {
-    "col": 26,
+    "col": 8,
     "row": 0,
-    "start": 26,
-    "state": 4,
+    "start": 8,
+    "state": 3,
     "type": "Number",
     "value": "1",
   },
   {
-    "col": 27,
+    "col": 9,
     "row": 0,
-    "start": 27,
+    "start": 9,
     "state": 4,
     "type": "Punctuator",
     "value": ";",
   },
   {
+    "col": 17,
+    "row": 0,
+    "start": 10,
+    "state": 1,
+    "type": "Keyword",
+    "value": "function",
+  },
+  {
+    "col": 20,
+    "row": 0,
+    "start": 19,
+    "state": 2,
+    "type": "Identifier",
+    "value": "main",
+  },
+  {
+    "col": 21,
+    "row": 0,
+    "start": 21,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "(",
+  },
+  {
+    "col": 22,
+    "row": 0,
+    "start": 22,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ")",
+  },
+  {
+    "col": 23,
+    "row": 0,
+    "start": 23,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "{",
+  },
+  {
     "col": 28,
     "row": 0,
-    "start": 28,
+    "start": 26,
+    "state": 1,
+    "type": "Keyword",
+    "value": "let",
+  },
+  {
+    "col": 30,
+    "row": 0,
+    "start": 30,
+    "state": 2,
+    "type": "Identifier",
+    "value": "a",
+  },
+  {
+    "col": 32,
+    "row": 0,
+    "start": 32,
+    "state": 6,
+    "type": "Operators",
+    "value": "=",
+  },
+  {
+    "col": 34,
+    "row": 0,
+    "start": 34,
+    "state": 3,
+    "type": "Number",
+    "value": "1",
+  },
+  {
+    "col": 35,
+    "row": 0,
+    "start": 35,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ";",
+  },
+  {
+    "col": 36,
+    "row": 0,
+    "start": 36,
     "state": 4,
     "type": "Punctuator",
     "value": "}",
   },
 ]
 
-tokens = [
-  {
-    value: "i",
-    type: 'da'
-  },
-  {
-    value: "+",
-    type: 'da'
-  },
-  {
-    value: "i",
-    type: 'da'
-  },
-  {
-    value: "*",
-    type: 'da'
-  },
-  {
-    value: "i",
-    type: 'da'
-  }
-]
+// tokens = [
+//   {
+//     value: "i",
+//     type: 'da'
+//   },
+//   {
+//     value: "+",
+//     type: 'da'
+//   },
+//   {
+//     value: "i",
+//     type: 'da'
+//   },
+//   {
+//     value: "*",
+//     type: 'da'
+//   },
+//   {
+//     value: "i",
+//     type: 'da'
+//   }
+// ]
 
 
 let token = tokens[0]
@@ -364,7 +399,8 @@ var test = {
 var ast2 = {
 
 }
-function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
+
+function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
   // 遍历某个 key 的所有候选式 
   if (target[key]) {
     // console.log(target[key]);
@@ -383,12 +419,12 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
           const vt = check[j]
           const vtOBj = { [vt]: {} }
           ast[key].children.push(vtOBj)
-          // console.log(key, vt, check, token ? token.value : undefined);
+          console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
             vtOBj[vt].children = { 'None': {} }
             return
           } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
-            // console.log(new Array(dep).fill("-").join(''), token.value);
+            console.log(new Array(dep).fill("-").join(''), token.value);
             getNextToken()
             // break
           } else {
@@ -407,7 +443,7 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
           ast[key].children = []
           const vtOBj = { 'None': {} }
           ast[key].children.push(vtOBj)
-          // console.log(new Array(dep).fill("-").join(''), 'None');
+          console.log(new Array(dep).fill("-").join(''), 'None');
         } else {
           // 最后一个且不属于follow或者最后一个也不能匹配，直接g
           console.log('gg');
@@ -427,6 +463,7 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
 const server = http.createServer((req, res) => {
   transform(GRAMMAR)
   parser()
+  res.setHeader("Content-Type", 'application/json; charset=utf-8')
   res.end(JSON.stringify(ast2));
 })
 
