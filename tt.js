@@ -373,7 +373,7 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
       const check = target[key][i]
       // 如果当前遍历的候选式包含当前的token
       const first = getFirst(check)
-      // console.log(key, first);
+      // console.log(key, check, i, target[key].length);
       if (token && (first.includes(token.value) || first.includes(token.type))) {
         // 在这里创建，因为外面创建，token.value 不一定属于 check 的 first 集合
         ast[key] = {}
@@ -383,12 +383,12 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
           const vt = check[j]
           const vtOBj = { [vt]: {} }
           ast[key].children.push(vtOBj)
-          console.log(key, vt, check, token ? token.value : undefined);
+          // console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
             vtOBj[vt].children = { 'None': {} }
             return
           } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
-            console.log(new Array(dep).fill("-").join(''), token.value);
+            // console.log(new Array(dep).fill("-").join(''), token.value);
             getNextToken()
             // break
           } else {
@@ -400,12 +400,14 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
       } else if (i === target[key].length - 1) {
         // console.log(key, getFollow(key));
         // console.log(key, check, token ? token.value : undefined);
-        if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
+        if (!token && tokens.length === 0) {
+          return
+        } else if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
           ast[key] = {}
           ast[key].children = []
           const vtOBj = { 'None': {} }
           ast[key].children.push(vtOBj)
-          console.log(new Array(dep).fill("-").join(''), 'None');
+          // console.log(new Array(dep).fill("-").join(''), 'None');
         } else {
           // 最后一个且不属于follow或者最后一个也不能匹配，直接g
           console.log('gg');
@@ -420,8 +422,6 @@ function parser(key = "<E>", dep = 2, ast = ast2, target = test) {
 
 // transform(GRAMMAR)
 // parser()
-console.dir(ast2);
-
 
 
 const server = http.createServer((req, res) => {
