@@ -1,4 +1,3 @@
-let a = 1;
-function main(){
-  let a = 1;
+function main() {
+  var sum = 1,2[3 = [1, 2, 3]
 }

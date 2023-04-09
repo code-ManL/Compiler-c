@@ -91,7 +91,7 @@ function handlePush(
       }
     } else {
       pushToken(token, tokenTypes[tokenState], tokenState, c, _col, _row, _col - c.length + 1)
-    
+
     }
     chars.length = 0
   }
@@ -106,17 +106,19 @@ export function tokenize(s: string) {
   row = 0
   while (s) {
     let c = s[0]
+
     switch (currentState) {
       case State.INITIAL:
         if (isAlpha(c)) {
-          chars.push(c)
-          s = s.slice(1)
-          col++
+          // chars.push(c)
+          // s = s.slice(1)
+          // col++
           currentState = State.CHARACTER
         } else if (isDigit(c)) {
-          chars.push(c)
-          s = s.slice(1)
-          col++
+          // console.log(c);
+          // chars.push(c)
+          // s = s.slice(1)
+          // col++
           currentState = State.NUMBER
         } else if (isSpace(c)) {
           s = s.slice(1)
@@ -196,6 +198,7 @@ export function tokenize(s: string) {
         col++
         break
       case State.NUMBER:
+        console.log(c,'c');
         if (isDigit(c) || c === '.') {
           col++
           if (
@@ -230,6 +233,9 @@ export function tokenize(s: string) {
         } else if (isPunctuator(c)) {
           handlePush(chars, token, TokenState.NUMBER, col, row)
           currentState = State.PUNCTUATOR
+        } else if(isSpace(c)){
+          handlePush(chars, token, TokenState.NUMBER, col, row)
+          currentState = State.INITIAL
         }
         break
       case State.OCT:
@@ -304,6 +310,7 @@ export function tokenize(s: string) {
             break
           } else {
             col++
+            // console.log(c);
             pushToken(token, tokenTypes[TokenState.PUNCTUATOR], TokenState.PUNCTUATOR, c, col, row, col - c.length + 1)
           }
           s = s.slice(1)
