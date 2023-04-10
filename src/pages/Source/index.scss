@@ -25,6 +25,15 @@
       justify-content: center;
       color: rgb(109, 109, 109);
     }
+
+    .graph-container{
+      height: 100%;
+
+      .link{
+        stroke-width: 3px;
+      }
+    }
+
   }
 
 }

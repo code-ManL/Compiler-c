@@ -140,8 +140,6 @@ function getFirst(key, arr = [], index = -1, target = obj) {
   return Array.from(new Set(arr))
 }
 
-
-
 function hasStack(stack, key) {
   return !!stack.includes(key)
 }
@@ -195,15 +193,11 @@ function getFollow(key, arr = [], target = obj) {
   return Array.from(new Set(arr))
 }
 
-
-
 // const r = getFirst('<三>')
 // console.log(r);
 
-
 // const d = getFollow('<二>')
 // console.log(d);
-
 function transform(s) {
   let arr = s.split('\n')
   arr.shift()
@@ -215,13 +209,11 @@ function transform(s) {
   }
   obj["<布尔表达式'>"] = ["||<表达 式>", 'None']
 }
-
 // transform(GRAMMAR)
 // console.log(obj);
 
 // console.log(getFirst(["+", "<T>", "<E'>"]));
-
-let tokens =  [
+let tokens = [
   {
     "col": 2,
     "row": 0,
@@ -375,14 +367,12 @@ let tokens =  [
 //   }
 // ]
 
-
 let token = tokens[0]
 
 function getNextToken() {
   tokens.shift()
   token = tokens[0]
 }
-
 
 // i + i * i
 var test = {
@@ -421,7 +411,7 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
           ast[key].children.push(vtOBj)
           console.log(key, vt, check, token ? token.value : undefined);
           if (!token) {
-            vtOBj[vt].children = { 'None': {} }
+            vtOBj[vt].children = [{ 'None': {} }]
             return
           } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
             console.log(new Array(dep).fill("-").join(''), token.value);
@@ -436,6 +426,7 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
       } else if (i === target[key].length - 1) {
         // console.log(key, getFollow(key));
         // console.log(key, check, token ? token.value : undefined);
+        // 全部扫描完毕回退时进行判断直接return
         if (!token && tokens.length === 0) {
           return
         } else if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
@@ -458,7 +449,6 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
 
 // transform(GRAMMAR)
 // parser()
-
 
 const server = http.createServer((req, res) => {
   transform(GRAMMAR)
