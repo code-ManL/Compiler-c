@@ -457,36 +457,51 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify(ast2));
 })
 
-server.listen(1188, function () {
-  console.log(`the server is started at port ${1188}`)
-})
+// server.listen(1188, function () {
+//   console.log(`the server is started at port ${1188}`)
+// })
+
+
+console.log('1234'.match(/([0-9])/)); // [ '1', '1', index: 0, input: '1234', groups: undefined ]
+// 相当于[0-9]，()存储最右一个匹配项
+console.log('1234'.match(/([0-9])+/)); // [ '1234', '4', index: 0, input: '1234', groups: undefined ]
+// /[a-z]|[0-9]/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，[0-9]匹配上了， [ '2', index: 0, input: '2a3abc', groups: undefined ]
+// /([a-z])|([0-9])/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，([0-9])匹配上了，这个时候，输出会显示每一个()的匹配内容
+// ，第一个匹配到的是undefined，[ '2', undefined, '2', index: 0, input: '2a3abc', groups: undefined ]
+// /([a-z]|[0-9])/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，([a-z]|[0-9])匹配上了，[ '2', '2', index: 0, input: '2a3abc', groups: undefined ]
+// 其实可以先不看(),就比较好理解，等正则匹配到时，再看每个()里面匹配的内容是啥
+// /(?:[a-z])|([0-9])/ ,/(?:[a-z])|([0-9])/，输出[ '2', '2', index: 0, input: '2a3abc', groups: undefined ]
+var s = "2a3abc";
+var r = /(?:[a-z])|([0-9])/
+var a = s.match(r);
+//左侧表达式匹配"<html><head><title></title></head><body></body></html>"
+// console.log(a)
+
+
+
+// 从右往左一直匹配，返回最后一个匹配的数据
+console.log(3,s.match(/(?=\d)[a-z]+/));
 
 
 
 
 
+var cs = "1234567890";
+var szf = new RegExp()
+var pad = cs.match(/((?=\d)\d{3})+/); // 结果为23456789
+
+console.log(pad)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+var cs = "1234567890";
+// var szf = new RegExp(/((?<=\d)\d{3})+/g);
+ // var pad = cs.match(szf);
+ 
+var szf = new RegExp(/(?<=\d)(?=(\d{3})+(?![\d]))/g)
+var pad = cs.replace(szf, ',')//1,234,567,890
+  
+console.log(pad.toString())
 
 
 
@@ -499,59 +514,4 @@ server.listen(1188, function () {
 // console.log('----------------------------------------------------------------');
 // for (const key of Object.keys(test)) {
 //   console.log(key, getFollow(key));
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-// console.log(getFirst(["<函数表达式>"]));
-// console.log(getFirst(['<声明语句列表>', '<MAIN函数定义>', '<函数列表>']));
-
-
-
-// console.log(getFirst(["<T>", "<E'>"]));
-// function parser(key = "<E>", dep = 2) {
-//   // 遍历某个 key 的所有候选式
-//   if (test[key]) {
-//     for (let i = 0; i < test[key].length; i++) {
-//       // 拿到其中一个候选式进行判断
-//       const check = test[key][i]
-//       // 如果当前遍历的候选式包含当前的token
-//       if (getFirst(check).includes(token.value)) {
-//         // 遍历当前候选式的所有非终结符
-//         for (let j = 0; j < check.length; j++) {
-//           const vt = check[j]
-//           // console.log(key, vt, check, token);
-//           if (!token) {
-//             return
-//           } else if (vt === token.value) {
-//             console.log(new Array(dep).fill("-").join(''), token.value);
-//             getNextToken()
-//             // break
-//           } else {
-//             parser(vt, dep + 1)
-//           }
-//         }
-//         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
-//         break
-//       } else if (i === test[key].length - 1 && check.length === 1 && check[0] === 'None') {
-//         if (getFollow(key).includes(token.value)) {
-//           console.log(new Array(dep).fill("-").join(''), 'None');
-//         } else {
-//           // 不属于follow直接g
-//           console.log('gg');
-//         }
-//       }
-//     }
-//   } else {
-//     return
-//   }
 // }
