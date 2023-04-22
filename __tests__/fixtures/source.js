@@ -1,2 +1,4 @@
-var a = 0712
-var b = 0020
+function main() {
+  let a = 1;
+  console.log(a);
+}
