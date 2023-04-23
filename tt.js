@@ -36,7 +36,11 @@ const GRAMMAR = `
 <函数调用> -> <标识符> ( <函数实参列表> )
 <函数调用语句> -> <函数调用> ;
 <语句> -> <声明语句> | <执行语句>
+<<<<<<< HEAD
 <执行语句> -> <输出语句> | <控制语句> | <复合语句> | <输出语句> | <数据处理语句>
+=======
+<执行语句> ->  <输出语句> | <数据处理语句> | <控制语句> | <复合语句>
+>>>>>>> 7a114653ccfab229fc59328dfb8baa97a2078fb0
 <输出语句> -> console . log ( <表达式> ) ;
 <数据处理语句> -> <标识符> <数据处理语句'> ;
 <数据处理语句'> -> = <表达式> | ( <函数实参列表> )
@@ -152,6 +156,7 @@ function getFollow(key, arr = [], target = obj) {
     arr.push("#")
   follow_stack.push(key)
   for (const item of Object.keys(target)) {
+    // 拿到候选式子队列
     const lang = target[item]
     for (const splitBlock of lang) {
       // 先判断候选中是否含有查找的非终结符
@@ -206,13 +211,13 @@ function transform(s) {
     const temp = v[1].split("|").map(t => t.trim())
     obj[v[0].trim()] = temp.map(item => item.split(" "))
   }
-  obj["<布尔表达式'>"] = ["||<表达 式>", 'None']
+  obj["<布尔表达式'>"] = [["||", "<表达式>"], ['None']]
 }
 // transform(GRAMMAR)
 // console.log(obj);
 
 // console.log(getFirst(["+", "<T>", "<E'>"]));
-let tokens = [
+let tokens =   [
   {
     "col": 7,
     "row": 0,
@@ -254,71 +259,110 @@ let tokens = [
     "value": "{",
   },
   {
-    "col": 25,
+    "col": 21,
     "row": 0,
     "start": 19,
-    "state": 2,
-    "type": "Identifier",
-    "value": "console",
+    "state": 1,
+    "type": "Keyword",
+    "value": "let",
   },
   {
-    "col": 26,
+    "col": 23,
     "row": 0,
-    "start": 26,
+    "start": 23,
+    "state": 2,
+    "type": "Identifier",
+    "value": "a",
+  },
+  {
+    "col": 25,
+    "row": 0,
+    "start": 25,
     "state": 6,
     "type": "Operators",
-    "value": ".",
+    "value": "=",
   },
   {
-    "col": 29,
+    "col": 27,
     "row": 0,
     "start": 27,
-    "state": 2,
-    "type": "Identifier",
-    "value": "log",
-  },
-  {
-    "col": 30,
-    "row": 0,
-    "start": 30,
-    "state": 4,
-    "type": "Punctuator",
-    "value": "(",
-  },
-  {
-    "col": 31,
-    "row": 0,
-    "start": 31,
     "state": 3,
     "type": "Number",
-    "value": "2",
+    "value": "1",
   },
   {
-    "col": 32,
+    "col": 28,
     "row": 0,
-    "start": 32,
-    "state": 4,
-    "type": "Punctuator",
-    "value": ")",
-  },
-  {
-    "col": 33,
-    "row": 0,
-    "start": 33,
+    "start": 28,
     "state": 4,
     "type": "Punctuator",
     "value": ";",
   },
   {
-    "col": 34,
+    "col": 37,
     "row": 0,
-    "start": 34,
+    "start": 31,
+    "state": 2,
+    "type": "Identifier",
+    "value": "console",
+  },
+  {
+    "col": 38,
+    "row": 0,
+    "start": 38,
+    "state": 6,
+    "type": "Operators",
+    "value": ".",
+  },
+  {
+    "col": 41,
+    "row": 0,
+    "start": 39,
+    "state": 2,
+    "type": "Identifier",
+    "value": "log",
+  },
+  {
+    "col": 42,
+    "row": 0,
+    "start": 42,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "(",
+  },
+  {
+    "col": 43,
+    "row": 0,
+    "start": 43,
+    "state": 2,
+    "type": "Identifier",
+    "value": "a",
+  },
+  {
+    "col": 44,
+    "row": 0,
+    "start": 44,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ")",
+  },
+  {
+    "col": 45,
+    "row": 0,
+    "start": 45,
+    "state": 4,
+    "type": "Punctuator",
+    "value": ";",
+  },
+  {
+    "col": 46,
+    "row": 0,
+    "start": 46,
     "state": 4,
     "type": "Punctuator",
     "value": "}",
   },
 ]
-
 // tokens = [
 //   {
 //     value: "i",
@@ -390,6 +434,13 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
             return
           } else if (vt === token.value || (token.type === target[vt][0][0] && token.value !== "main")) {
             console.log(new Array(dep).fill("-").join(''), token.value);
+            // 标识符 ， 整数 ， 字符串
+            if (vt !== token.value && (token.type === target[vt][0][0] && token.value !== "main")) {
+              vtOBj[vt].children = []
+              vtOBj[vt].children.push({
+                [token.value]: {}
+              })
+            }
             getNextToken()
             // break
           } else {
@@ -433,7 +484,7 @@ parser()
 //   res.end(JSON.stringify(ast2));
 // })
 
-// server.listen(1188, function () {
-//   console.log(`the server is started at port ${1188}`)
-// })
+server.listen(1188, function () {
+  console.log(`the server is started at port ${1188}`)
+})
 
