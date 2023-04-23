@@ -198,7 +198,6 @@ export function tokenize(s: string) {
         col++
         break
       case State.NUMBER:
-        console.log(c, 'c');
         if (isDigit(c) || c === '.') {
           col++
           if (chars.length === 1 && chars[0] === '0') {

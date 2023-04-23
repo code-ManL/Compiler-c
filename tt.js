@@ -36,7 +36,8 @@ const GRAMMAR = `
 <函数调用> -> <标识符> ( <函数实参列表> )
 <函数调用语句> -> <函数调用> ;
 <语句> -> <声明语句> | <执行语句>
-<执行语句> -> <数据处理语句> | <控制语句> | <复合语句>
+<执行语句> -> <输出语句> | <控制语句> | <复合语句> | <输出语句> | <数据处理语句>
+<输出语句> -> console . log ( <表达式> ) ;
 <数据处理语句> -> <标识符> <数据处理语句'> ;
 <数据处理语句'> -> = <表达式> | ( <函数实参列表> )
 <控制语句> -> <IF语句> | <循环语句> | <RETURN语句>
@@ -85,8 +86,6 @@ const GRAMMAR = `
 <赋值表达式> -> = <表达式>
 `
 
-
-
 const obj = {
 }
 
@@ -106,7 +105,7 @@ function judgeNone(key, target = obj) {
 
 
 let first_stack = []
-function getFirst(key, arr = [], index = -1, target = obj) {
+function getFirst(key, arr = [], target = obj) {
   // console.log('first', key);
   if (!Array.isArray(key) && !target[key] || hasStack(follow_stack, key)) {
     return arr
@@ -215,129 +214,105 @@ function transform(s) {
 // console.log(getFirst(["+", "<T>", "<E'>"]));
 let tokens = [
   {
-    "col": 2,
+    "col": 7,
     "row": 0,
     "start": 0,
-    "state": 1,
-    "type": "Keyword",
-    "value": "let",
-  },
-  {
-    "col": 4,
-    "row": 0,
-    "start": 4,
-    "state": 2,
-    "type": "Identifier",
-    "value": "a",
-  },
-  {
-    "col": 6,
-    "row": 0,
-    "start": 6,
-    "state": 6,
-    "type": "Operators",
-    "value": "=",
-  },
-  {
-    "col": 8,
-    "row": 0,
-    "start": 8,
-    "state": 3,
-    "type": "Number",
-    "value": "1",
-  },
-  {
-    "col": 9,
-    "row": 0,
-    "start": 9,
-    "state": 4,
-    "type": "Punctuator",
-    "value": ";",
-  },
-  {
-    "col": 17,
-    "row": 0,
-    "start": 10,
     "state": 1,
     "type": "Keyword",
     "value": "function",
   },
   {
-    "col": 20,
+    "col": 12,
     "row": 0,
-    "start": 19,
+    "start": 9,
     "state": 2,
     "type": "Identifier",
     "value": "main",
   },
   {
-    "col": 21,
+    "col": 13,
     "row": 0,
-    "start": 21,
+    "start": 13,
     "state": 4,
     "type": "Punctuator",
     "value": "(",
   },
   {
-    "col": 22,
+    "col": 14,
     "row": 0,
-    "start": 22,
+    "start": 14,
     "state": 4,
     "type": "Punctuator",
     "value": ")",
   },
   {
-    "col": 23,
+    "col": 16,
     "row": 0,
-    "start": 23,
+    "start": 16,
     "state": 4,
     "type": "Punctuator",
     "value": "{",
   },
   {
-    "col": 28,
+    "col": 25,
+    "row": 0,
+    "start": 19,
+    "state": 2,
+    "type": "Identifier",
+    "value": "console",
+  },
+  {
+    "col": 26,
     "row": 0,
     "start": 26,
-    "state": 1,
-    "type": "Keyword",
-    "value": "let",
+    "state": 6,
+    "type": "Operators",
+    "value": ".",
+  },
+  {
+    "col": 29,
+    "row": 0,
+    "start": 27,
+    "state": 2,
+    "type": "Identifier",
+    "value": "log",
   },
   {
     "col": 30,
     "row": 0,
     "start": 30,
-    "state": 2,
-    "type": "Identifier",
-    "value": "a",
+    "state": 4,
+    "type": "Punctuator",
+    "value": "(",
+  },
+  {
+    "col": 31,
+    "row": 0,
+    "start": 31,
+    "state": 3,
+    "type": "Number",
+    "value": "2",
   },
   {
     "col": 32,
     "row": 0,
     "start": 32,
-    "state": 6,
-    "type": "Operators",
-    "value": "=",
+    "state": 4,
+    "type": "Punctuator",
+    "value": ")",
   },
   {
-    "col": 34,
+    "col": 33,
     "row": 0,
-    "start": 34,
-    "state": 3,
-    "type": "Number",
-    "value": "1",
-  },
-  {
-    "col": 35,
-    "row": 0,
-    "start": 35,
+    "start": 33,
     "state": 4,
     "type": "Punctuator",
     "value": ";",
   },
   {
-    "col": 36,
+    "col": 34,
     "row": 0,
-    "start": 36,
+    "start": 34,
     "state": 4,
     "type": "Punctuator",
     "value": "}",
@@ -447,71 +422,18 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
   }
 }
 
-// transform(GRAMMAR)
-// parser()
+transform(GRAMMAR)
+console.log(obj);
+parser()
 
-const server = http.createServer((req, res) => {
-  transform(GRAMMAR)
-  parser()
-  res.setHeader("Content-Type", 'application/json; charset=utf-8')
-  res.end(JSON.stringify(ast2));
-})
+// const server = http.createServer((req, res) => {
+//   transform(GRAMMAR)
+//   parser()
+//   res.setHeader("Content-Type", 'application/json; charset=utf-8')
+//   res.end(JSON.stringify(ast2));
+// })
 
 // server.listen(1188, function () {
 //   console.log(`the server is started at port ${1188}`)
 // })
 
-
-console.log('1234'.match(/([0-9])/)); // [ '1', '1', index: 0, input: '1234', groups: undefined ]
-// 相当于[0-9]，()存储最右一个匹配项
-console.log('1234'.match(/([0-9])+/)); // [ '1234', '4', index: 0, input: '1234', groups: undefined ]
-// /[a-z]|[0-9]/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，[0-9]匹配上了， [ '2', index: 0, input: '2a3abc', groups: undefined ]
-// /([a-z])|([0-9])/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，([0-9])匹配上了，这个时候，输出会显示每一个()的匹配内容
-// ，第一个匹配到的是undefined，[ '2', undefined, '2', index: 0, input: '2a3abc', groups: undefined ]
-// /([a-z]|[0-9])/ 会对每一个项运用匹配规则进行匹配，对于第一个字符2来说，([a-z]|[0-9])匹配上了，[ '2', '2', index: 0, input: '2a3abc', groups: undefined ]
-// 其实可以先不看(),就比较好理解，等正则匹配到时，再看每个()里面匹配的内容是啥
-// /(?:[a-z])|([0-9])/ ,/(?:[a-z])|([0-9])/，输出[ '2', '2', index: 0, input: '2a3abc', groups: undefined ]
-var s = "2a3abc";
-var r = /(?:[a-z])|([0-9])/
-var a = s.match(r);
-//左侧表达式匹配"<html><head><title></title></head><body></body></html>"
-// console.log(a)
-
-
-
-// 从右往左一直匹配，返回最后一个匹配的数据
-console.log(3,s.match(/(?=\d)[a-z]+/));
-
-
-
-
-
-var cs = "1234567890";
-var szf = new RegExp()
-var pad = cs.match(/((?=\d)\d{3})+/); // 结果为23456789
-
-console.log(pad)
-
-
-
-var cs = "1234567890";
-// var szf = new RegExp(/((?<=\d)\d{3})+/g);
- // var pad = cs.match(szf);
- 
-var szf = new RegExp(/(?<=\d)(?=(\d{3})+(?![\d]))/g)
-var pad = cs.replace(szf, ',')//1,234,567,890
-  
-console.log(pad.toString())
-
-
-
-
-
-
-// for (const key of Object.keys(test)) {
-//   console.log(key, getFirst(key));
-// }
-// console.log('----------------------------------------------------------------');
-// for (const key of Object.keys(test)) {
-//   console.log(key, getFollow(key));
-// }
