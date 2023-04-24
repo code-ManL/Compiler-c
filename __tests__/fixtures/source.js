@@ -1,4 +1,4 @@
 function main() {
-  let a = 1;
-  console.log(a);
+  if (3 > 1) {
+  }
 }

@@ -36,11 +36,7 @@ const GRAMMAR = `
 <函数调用> -> <标识符> ( <函数实参列表> )
 <函数调用语句> -> <函数调用> ;
 <语句> -> <声明语句> | <执行语句>
-<<<<<<< HEAD
 <执行语句> -> <输出语句> | <控制语句> | <复合语句> | <输出语句> | <数据处理语句>
-=======
-<执行语句> ->  <输出语句> | <数据处理语句> | <控制语句> | <复合语句>
->>>>>>> 7a114653ccfab229fc59328dfb8baa97a2078fb0
 <输出语句> -> console . log ( <表达式> ) ;
 <数据处理语句> -> <标识符> <数据处理语句'> ;
 <数据处理语句'> -> = <表达式> | ( <函数实参列表> )
@@ -97,21 +93,25 @@ const globalMatch = /<.*>/
 
 function judgeNone(key, target = obj) {
   let arr = target[key]
+  let hasNone = false
   for (const temp of arr) {
     if (temp[0] === 'None') {
-      return true
+      hasNone = true
     } else if (temp[0].match(globalMatch)) {
-      return judgeNone(temp[0])
+      hasNone = judgeNone(temp[0])
+    }
+    if(hasNone){
+      return hasNone
     }
   }
-  return false
+  return hasNone
 }
 
 
 let first_stack = []
 function getFirst(key, arr = [], target = obj) {
   // console.log('first', key);
-  if (!Array.isArray(key) && !target[key] || hasStack(follow_stack, key)) {
+  if (!Array.isArray(key) && !target[key] || hasStack(first_stack, key)) {
     return arr
   }
   // const arrs = index === -1 ? test[key] : [test[key][index]]
@@ -173,6 +173,7 @@ function getFollow(key, arr = [], target = obj) {
             temp.delete('None')
             arr.push(...Array.from(temp))
           } else {
+            // 终结符直接加入
             arr.push(splitBlock[i])
             hasNone = false
             break
@@ -211,13 +212,13 @@ function transform(s) {
     const temp = v[1].split("|").map(t => t.trim())
     obj[v[0].trim()] = temp.map(item => item.split(" "))
   }
-  obj["<布尔表达式'>"] = [["||", "<表达式>"], ['None']]
+  // obj["<布尔表达式'>"] = [["||", "<表达式>"], ['None']]
 }
 // transform(GRAMMAR)
 // console.log(obj);
 
 // console.log(getFirst(["+", "<T>", "<E'>"]));
-let tokens =   [
+let tokens = [
   {
     "col": 7,
     "row": 0,
@@ -259,20 +260,28 @@ let tokens =   [
     "value": "{",
   },
   {
-    "col": 21,
+    "col": 20,
     "row": 0,
     "start": 19,
     "state": 1,
     "type": "Keyword",
-    "value": "let",
+    "value": "if",
+  },
+  {
+    "col": 22,
+    "row": 0,
+    "start": 22,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "(",
   },
   {
     "col": 23,
     "row": 0,
     "start": 23,
-    "state": 2,
-    "type": "Identifier",
-    "value": "a",
+    "state": 3,
+    "type": "Number",
+    "value": "3",
   },
   {
     "col": 25,
@@ -280,7 +289,7 @@ let tokens =   [
     "start": 25,
     "state": 6,
     "type": "Operators",
-    "value": "=",
+    "value": ">",
   },
   {
     "col": 27,
@@ -296,73 +305,34 @@ let tokens =   [
     "start": 28,
     "state": 4,
     "type": "Punctuator",
-    "value": ";",
-  },
-  {
-    "col": 37,
-    "row": 0,
-    "start": 31,
-    "state": 2,
-    "type": "Identifier",
-    "value": "console",
-  },
-  {
-    "col": 38,
-    "row": 0,
-    "start": 38,
-    "state": 6,
-    "type": "Operators",
-    "value": ".",
-  },
-  {
-    "col": 41,
-    "row": 0,
-    "start": 39,
-    "state": 2,
-    "type": "Identifier",
-    "value": "log",
-  },
-  {
-    "col": 42,
-    "row": 0,
-    "start": 42,
-    "state": 4,
-    "type": "Punctuator",
-    "value": "(",
-  },
-  {
-    "col": 43,
-    "row": 0,
-    "start": 43,
-    "state": 2,
-    "type": "Identifier",
-    "value": "a",
-  },
-  {
-    "col": 44,
-    "row": 0,
-    "start": 44,
-    "state": 4,
-    "type": "Punctuator",
     "value": ")",
   },
   {
-    "col": 45,
+    "col": 30,
     "row": 0,
-    "start": 45,
+    "start": 30,
     "state": 4,
     "type": "Punctuator",
-    "value": ";",
+    "value": "{",
   },
   {
-    "col": 46,
+    "col": 33,
     "row": 0,
-    "start": 46,
+    "start": 33,
+    "state": 4,
+    "type": "Punctuator",
+    "value": "}",
+  },
+  {
+    "col": 34,
+    "row": 0,
+    "start": 34,
     "state": 4,
     "type": "Punctuator",
     "value": "}",
   },
 ]
+
 // tokens = [
 //   {
 //     value: "i",
@@ -418,9 +388,12 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
       const check = target[key][i]
       // 如果当前遍历的候选式包含当前的token
       const first = getFirst(check)
+      // 因为候选式子只有一个能匹配，因此匹配上就终止for循环
+      let hasMatch = false
       // console.log(key, check, i, target[key].length);
-      if (token && (first.includes(token.value) || first.includes(token.type))) {
+      if (!hasMatch && token && (first.includes(token.value) || first.includes(token.type))) {
         // 在这里创建，因为外面创建，token.value 不一定属于 check 的 first 集合
+        hasMatch = true
         ast[key] = {}
         ast[key].children = []
         // 遍历当前候选式的所有非终结符
@@ -449,13 +422,18 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
         }
         // 如果当前候选式的first集合有token，执行完毕就可以break了，无回溯
         break
-      } else if (i === target[key].length - 1) {
+      }
+      // 如果是最后一个
+      if (i === target[key].length - 1) {
         // console.log(key, getFollow(key));
         // console.log(key, check, token ? token.value : undefined);
         // 全部扫描完毕回退时进行判断直接return
         if (!token && tokens.length === 0) {
           return
-        } else if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
+        }
+        // 判断有问题
+        // else if (getFollow(key).includes(token.value) && check.length === 1 && check[0] === 'None') {
+        else if (getFollow(key).includes(token.value)) {
           ast[key] = {}
           ast[key].children = []
           const vtOBj = { 'None': {} }
@@ -467,6 +445,9 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
           return
         }
       }
+      if (hasMatch) {
+        return
+      }
     }
   } else {
     return
@@ -474,8 +455,9 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
 }
 
 transform(GRAMMAR)
-console.log(obj);
 parser()
+// console.log(getFollow("<IF语句''>"));
+// console.log(getFirst("<语句表'>"));
 
 // const server = http.createServer((req, res) => {
 //   transform(GRAMMAR)
@@ -484,7 +466,7 @@ parser()
 //   res.end(JSON.stringify(ast2));
 // })
 
-server.listen(1188, function () {
-  console.log(`the server is started at port ${1188}`)
-})
+// server.listen(1188, function () {
+//   console.log(`the server is started at port ${1188}`)
+// })
 
