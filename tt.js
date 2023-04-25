@@ -199,7 +199,6 @@ function getFollow(key, arr = [], target = obj) {
 }
 
 // const r = getFirst('<三>')
-// console.log(r);
 
 // const d = getFollow('<二>')
 // console.log(d);
