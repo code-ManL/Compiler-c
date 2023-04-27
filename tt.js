@@ -197,7 +197,6 @@ function getFollow(key, arr = [], target = obj) {
   follow_stack.pop()
   return Array.from(new Set(arr))
 }
-
 // const r = getFirst('<三>')
 
 // const d = getFollow('<二>')
