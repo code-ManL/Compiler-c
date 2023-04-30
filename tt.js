@@ -454,6 +454,7 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
 
 transform(GRAMMAR)
 parser()
+
 // console.log(getFollow("<IF语句''>"));
 // console.log(getFirst("<语句表'>"));
 
