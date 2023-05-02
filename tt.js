@@ -451,7 +451,6 @@ function parser(key = "<程序>", dep = 2, ast = ast2, target = obj) {
     return
   }
 }
-
 transform(GRAMMAR)
 parser()
 
