@@ -456,7 +456,6 @@ parser()
 
 // console.log(getFollow("<IF语句''>"));
 // console.log(getFirst("<语句表'>"));
-
 // const server = http.createServer((req, res) => {
 //   transform(GRAMMAR)
 //   parser()
